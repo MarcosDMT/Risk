@@ -1,0 +1,46 @@
+/*.dx-datagrid-header-panel {*/
+/*    padding: 0;*/
+/*    background-color: rgba(85, 149, 222, 0.6);*/
+/*}*/
+/*.dx-theme-material-typography, .dx-datagrid{*/
+/*    font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;*/
+/*}*/
+.dx-datagrid-rowsview .dx-master-detail-row:not(.dx-datagrid-edit-form) > .dx-datagrid-group-space,
+.dx-datagrid-rowsview .dx-master-detail-row:not(.dx-datagrid-edit-form) .dx-master-detail-cell {
+    background-color: transparent;
+}
+.dx-header-row {
+    color:white;
+    background: linear-gradient(45deg,#3f51b5  50%, #f50057  90%);
+}
+.dx-datagrid-filter-panel .dx-datagrid-filter-panel-clear-filter, .dx-datagrid-filter-panel .dx-datagrid-filter-panel-text {
+    color:#3f51b5;
+}
+.dx-datagrid-filter-panel .dx-icon-filter{
+    color:#3f51b5;
+}
+.dx-datagrid-header-panel .dx-toolbar {
+    margin: 0;
+    padding-right: 20px;
+    background-color: transparent;
+}
+
+.dx-datagrid-header-panel .dx-toolbar-items-container {
+    height: 70px;
+}
+
+/*.dx-datagrid-header-panel .dx-toolbar-before .dx-toolbar-item:not(:first-child) {*/
+/*    background-color: rgba(103, 171, 255, 0.6);*/
+/*}*/
+
+.dx-datagrid-header-panel .dx-toolbar-before .dx-toolbar-item:last-child {
+    padding-right: 10px;
+}
+
+.dx-datagrid-header-panel .dx-selectbox {
+    margin: auto 10px;
+}
+
+.dx-datagrid-header-panel .dx-button {
+    margin: auto 0;
+}
