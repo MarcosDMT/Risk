@@ -19,6 +19,10 @@ import {
   TableHead,
   TableRow,
 } from '@material-ui/core';
+import { MenuItem, InputAdornment,Typography } from '@material-ui/core';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
+import PhoneIcon from '@material-ui/icons/Phone';
 import { AccountBox, PanoramaFishEye, PersonAdd, Work } from '@mui/icons-material';
 import GridContainer from '../../../../@jumbo/components/GridContainer';
 import TextField from '@material-ui/core/TextField';
@@ -260,6 +264,7 @@ const UserForm = props => {
     subSectionName: '',
   };
   const [activeStep, setActiveStep] = useState(0);
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false);
   const steps = getSteps();
   const { organization } = userDetails;
   const dispatch = useDispatch();
@@ -397,6 +402,16 @@ const UserForm = props => {
     });
     dispatch(fetchRoles(currentSubsidiary));
   }, [currentSubsidiary]);
+
+  // validate phone number
+  const handlePhoneNumberValidation = value => {
+    if (value === undefined) {
+      setIsValidPhoneNumber(false);
+    } else {
+      setIsValidPhoneNumber(PhoneInput.isValidPhoneNumber(value));
+    }
+  };
+
   return (
     <Box className={classes.root}>
       <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
@@ -458,6 +473,8 @@ const UserForm = props => {
                   <Grid item md={6} xs={12}>
                     <AppTextInput
                       fullWidth
+                      type="phone"
+                      defaultCountry="KE"
                       variant="outlined"
                       label="Phone Number"
                       value={userDetails.phoneNumber}
