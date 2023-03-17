@@ -29,6 +29,9 @@ import { MdCalculate } from 'react-icons/md';
 import { assessRiskUniverse } from '../../../../redux/actions/RiskUniverse';
 import { useDispatch } from 'react-redux';
 import { downloadTemplate } from '../../../../redux/actions/RiskUniverse';
+import DownloadIcon from '@mui/icons-material/Download';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
@@ -145,21 +148,21 @@ const RisksTable = props => {
   };
 
   function probabilityColor({ displayValue, data }) {
-    if(!data?.riskProbabilityColor){
+    if (!data?.riskProbabilityColor) {
       return displayValue;
     }
     return <Typography style={{ color: data?.riskProbabilityColor ?? '' }}>{displayValue}</Typography>;
   }
 
   function severityColor({ displayValue, data }) {
-    if(!data.riskSeverityColor){
+    if (!data.riskSeverityColor) {
       return displayValue;
     }
     return <Typography style={{ color: data?.riskSeverityColor ?? '' }}>{displayValue}</Typography>;
   }
 
   function inherentColor({ displayValue, data }) {
-    if(!data.inherentRiskColor){
+    if (!data.inherentRiskColor) {
       return displayValue;
     }
     return <Typography style={{ color: data?.inherentRiskColor ?? '' }}>{displayValue}</Typography>;
@@ -172,6 +175,15 @@ const RisksTable = props => {
   //   return <Typography style={{ color: data?.residualRiskColor ?? '' }}>{displayValue}</Typography>;
   // }
 
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(risks);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
@@ -424,9 +436,9 @@ const RisksTable = props => {
                   variant="contained"
                   size={'small'}
                   className={classes.btn}
-                  //onClick={onAddUser}
                   color="primary"
-                  style={{ marginBottom: '10px' }}>
+                  // onClick={onAddUser}
+                >
                   <AddCircle /> Create New Risk
                 </Button>
               </Link>
@@ -439,9 +451,15 @@ const RisksTable = props => {
                 size={'small'}
                 className={classes.btn}
                 onClick={e => setOpenDialog(true)}
-                color="primary"
-                style={{ marginBottom: '10px' }}>
+                color="primary">
                 <FileUpload /> Import Risks
+              </Button>
+            </RoleBasedGuard>
+          </Item>
+          <Item location="before">
+            <RoleBasedGuard permission={PERMISSIONS.RISK_UNIVERSE.CREATE}>
+              <Button variant="outlined" size={'small'} onClick={exportToExcel} color="primary">
+                <DownloadIcon /> Export to Excel
               </Button>
             </RoleBasedGuard>
           </Item>

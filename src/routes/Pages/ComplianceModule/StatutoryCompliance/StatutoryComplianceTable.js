@@ -10,15 +10,22 @@ import {
   Paging,
   SearchPanel,
 } from 'devextreme-react/data-grid';
-import { Chip } from '@material-ui/core';
+import { Chip,Box,Button } from '@material-ui/core';
 import { DataGrid } from 'devextreme-react';
 import { Delete, Edit, MoreHoriz, Visibility } from '@material-ui/icons';
 import CmtDropdownMenu from '../../../../@coremat/CmtDropdownMenu';
 import { getComplianceStatus } from '../../../../@jumbo/utils/commonHelper';
 import { Typography } from '@mui/material';
 import ActionStatutoryDialog from './ActionStatutoryDialog';
-import { useDispatch,useSelector } from 'react-redux';
-import { fetchStatutoryCompliance, fetchStatutoryComplianceMain, fetchStatutoryComplianceSub } from '../../../../redux/actions/Compliance';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  fetchStatutoryCompliance,
+  fetchStatutoryComplianceMain,
+  fetchStatutoryComplianceSub,
+} from '../../../../redux/actions/Compliance';
+import DownloadIcon from '@mui/icons-material/Download';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 const getActions = data => {
   const actions = [
@@ -40,10 +47,7 @@ const StatutoryComplianceTable = props => {
     setOpenDialog(true);
   };
 
-  const {
-    selectedStatutory,
-  } = useSelector(({ compliance }) => compliance);
-
+  const { selectedStatutory } = useSelector(({ compliance }) => compliance);
 
   const handleOnCloseCompliance = () => {
     setOpenDialog(false);
@@ -77,7 +81,7 @@ const StatutoryComplianceTable = props => {
     //   </>
     // );
   }
-  const onMenuClick = async(menu, data) => {
+  const onMenuClick = async (menu, data) => {
     if (menu.action === 'view') {
       onViewCompliance(data);
     } else if (menu.action === 'edit') {
@@ -112,10 +116,29 @@ const StatutoryComplianceTable = props => {
     );
   }
 
-
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(complianceList);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button
+          variant="outlined"
+          size={'small'}
+          color="primary"
+          onClick={exportToExcel}
+          // style={{ marginBottom: '10px' }}
+        >
+          <DownloadIcon /> Export to Excel
+        </Button>
+      </Box>
       <DataGrid
         id="enterprise-compliance"
         columnAutoWidth={true}

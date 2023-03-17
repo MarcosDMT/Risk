@@ -25,6 +25,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import RoleBasedGuard from '../../../../@jumbo/hocs/RoleAuth';
 import { fetchIncidents } from '../../../../redux/actions/RiskIncident';
 import { Typography } from '@mui/material';
+import DownloadIcon from '@mui/icons-material/Download';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 
 const getActions = permissions => {
@@ -96,6 +99,16 @@ const IncidentTable = props => {
     displayValue = new Date(formattedDate).toLocaleDateString();
     return <Typography>{displayValue}</Typography>
   }
+
+   // Export data to excel
+   const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(incidents);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
@@ -228,12 +241,27 @@ const IncidentTable = props => {
                   className={classes.btn}
                   //onClick={onAddUser}
                   color="primary"
-                  style={{ marginBottom: '10px' }}>
+                  // style={{ marginBottom: '10px' }}
+                  >
                   <AddCircle /> Create Incident
                 </Button>
               </Link>
             </RoleBasedGuard>
           </Item>
+          <Item location="before">
+            <RoleBasedGuard permission={PERMISSIONS.RISK_INCIDENT.CREATE}>
+                <Button
+                  variant="outlined"
+                  size={'small'}
+                  color="primary"
+                  onClick={exportToExcel}
+                  // style={{ marginBottom: '10px' }}
+                  >
+                  <DownloadIcon /> Export to Excel
+                </Button>
+            </RoleBasedGuard>
+          </Item>
+          
           <Item location="after" name="columnChooserButton" />
           <Item location="after" name="searchPanel" />
         </Toolbar>

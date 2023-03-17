@@ -15,7 +15,7 @@ import {
   Toolbar,
 } from 'devextreme-react/data-grid';
 import { Link } from 'react-router-dom';
-import { Button, Chip } from '@material-ui/core';
+import { Button, Chip,Box } from '@material-ui/core';
 import { FileUpload } from '@mui/icons-material';
 import { DataGrid } from 'devextreme-react';
 import useStyles from '../../index.style';
@@ -24,9 +24,16 @@ import CmtDropdownMenu from '../../../../@coremat/CmtDropdownMenu';
 import { getAccountStatus, getComplianceStatus } from '../../../../@jumbo/utils/commonHelper';
 import { Typography } from '@mui/material';
 import ActionEnterpriseDialog from './ActionEnterpriseDialog';
-import { fetchEnterpriseCompliance, fetchEnterpriseComplianceMain, fetchEnterpriseComplianceSub } from '../../../../redux/actions/Compliance';
-import { useDispatch,useSelector } from 'react-redux';
+import {
+  fetchEnterpriseCompliance,
+  fetchEnterpriseComplianceMain,
+  fetchEnterpriseComplianceSub,
+} from '../../../../redux/actions/Compliance';
+import { useDispatch, useSelector } from 'react-redux';
 import HistoryIcon from '@mui/icons-material/History';
+import DownloadIcon from '@mui/icons-material/Download';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 const getActions = (data, viewOnly) => {
   const actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
@@ -54,9 +61,7 @@ const EnterpriseComplianceTable = props => {
   const [selectedCompliance, setSelectedCompliance] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const dispatch = useDispatch();
-  const {
-    selectedEnterprise,
-  } = useSelector(({ compliance }) => compliance);
+  const { selectedEnterprise } = useSelector(({ compliance }) => compliance);
 
   const handleOnSelectCompliance = compliance => {
     setSelectedCompliance(compliance);
@@ -90,14 +95,14 @@ const EnterpriseComplianceTable = props => {
     //   </>
     // );
   }
-  const onMenuClick = async(menu, data) => {
+  const onMenuClick = async (menu, data) => {
     if (menu.action === 'view') {
       onViewCompliance(data);
     } else if (menu.action === 'edit') {
       onUpdateCompliance(data);
     } else if (menu.action === 'delete') {
       await onDeleteCompliance(data);
-      await dispatch(fetchEnterpriseComplianceSub({id: selectedEnterprise}));
+      await dispatch(fetchEnterpriseComplianceSub({ id: selectedEnterprise }));
     } else if (menu.action === 'history') {
       onFetchEnterpriseHistory(data);
     }
@@ -138,14 +143,36 @@ const EnterpriseComplianceTable = props => {
     return displayValue?.map(value => <li key={value.sectionId}>{value.sectionName}</li>);
   };
 
-  const convertDate = ({ displayValue,data})=>{
+  const convertDate = ({ displayValue, data }) => {
     let formattedDate = data.submissionDeadline;
     displayValue = new Date(formattedDate).toLocaleDateString();
-    return <Typography>{displayValue}</Typography>
-  }
+    return <Typography>{displayValue}</Typography>;
+  };
+
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(complianceList);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
+      <Box sx={{display:'flex',justifyContent:'flex-end'}}>
+        <Button
+          variant="outlined"
+          size={'small'}
+          color="primary"
+          onClick={exportToExcel}
+          // style={{ marginBottom: '10px' }}
+        >
+          <DownloadIcon /> Export to Excel
+        </Button>
+      </Box>
+
       <DataGrid
         id="enterprise-compliance"
         columnAutoWidth={true}
@@ -318,6 +345,7 @@ const EnterpriseComplianceTable = props => {
           allowSearch={true}
           allowFiltering={false}
         />
+
         <Paging defaultPageSize={20} />
         <Pager
           visible={true}
