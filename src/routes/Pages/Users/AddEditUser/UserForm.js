@@ -19,7 +19,7 @@ import {
   TableHead,
   TableRow,
 } from '@material-ui/core';
-import { MenuItem, InputAdornment,Typography } from '@material-ui/core';
+import { MenuItem, InputAdornment, Typography } from '@material-ui/core';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -412,6 +412,27 @@ const UserForm = props => {
     }
   };
 
+  const countries = [
+    {
+      name: "Kenya",
+      code: "KE",
+      flag: "ke",
+      tel: "+254",
+    },
+    {
+      name: "Uganda",
+      code: "UG",
+      flag: "ug",
+      tel: "+256",
+    },
+    {
+      name: "Rwanda",
+      code: "RW",
+      flag: "rw",
+      tel: "+250",
+    },
+  ];
+
   return (
     <Box className={classes.root}>
       <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
@@ -471,6 +492,52 @@ const UserForm = props => {
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
+                    {/* <TextField
+                      variant={'outlined'}
+                      autoFocus
+                      error={Boolean(formikValidation.touched.phoneNumber && formikValidation.errors.phoneNumber)}
+                      fullWidth
+                      helperText={formikValidation.touched.phoneNumber && formikValidation.errors.phoneNumber}
+                      sx={{ minWidth: "450px" }}
+                      label="Phone Number"
+                      margin="normal"
+                      disabled={phoneDisabled}
+                      name="phoneNumber"
+                      onBlur={formikValidation.handleBlur}
+                      onChange={formikValidation.handleChange}
+                      type="number"
+                      value={formikValidation.values.phoneNumber}
+                      InputProps={{
+                        form: {
+                          autocomplete: 'off',
+                        },
+                        startAdornment: (
+                          <>
+                            <InputAdornment position="start">
+                              <TextField
+                                select
+                                disabled={phoneDisabled}
+                                style={{ width: '60px' }}
+                                label=""
+                                name="countryCode"
+                                variant={'standard'}
+                                value={formikValidation.values.countryCode}
+                                onChange={formikValidation.handleChange}
+                                InputProps={{
+                                  disableUnderline: true,
+                                }}>
+                                {countries.map((country, key) => (
+                                  <MenuItem key={key} value={country.tel}>
+                                    <span className={`fi fi-${country.flag} fis`}>{country.code}</span>
+                                  </MenuItem>
+                                ))}
+                              </TextField>
+                            </InputAdornment>
+                            <InputAdornment position={'start'}>{formikValidation.values.countryCode}</InputAdornment>
+                          </>
+                        ),
+                      }}
+                    /> */}
                     <AppTextInput
                       fullWidth
                       type="phone"

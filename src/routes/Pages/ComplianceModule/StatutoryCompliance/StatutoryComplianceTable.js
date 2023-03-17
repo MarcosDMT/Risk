@@ -23,9 +23,7 @@ import {
   fetchStatutoryComplianceMain,
   fetchStatutoryComplianceSub,
 } from '../../../../redux/actions/Compliance';
-import DownloadIcon from '@mui/icons-material/Download';
-import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
+
 
 const getActions = data => {
   const actions = [
@@ -116,29 +114,9 @@ const StatutoryComplianceTable = props => {
     );
   }
 
-  // Export data to excel
-  const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(complianceList);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    saveAs(blob, 'data.xlsx');
-  };
 
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          variant="outlined"
-          size={'small'}
-          color="primary"
-          onClick={exportToExcel}
-          // style={{ marginBottom: '10px' }}
-        >
-          <DownloadIcon /> Export to Excel
-        </Button>
-      </Box>
       <DataGrid
         id="enterprise-compliance"
         columnAutoWidth={true}

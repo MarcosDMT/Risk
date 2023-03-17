@@ -24,8 +24,6 @@ import { fetchIndicator } from '../../../../redux/actions/RiskIndicator';
 import { PERMISSIONS } from '../../../../@jumbo/constants/RolesConstants';
 import { MoreHoriz, Visibility } from '@material-ui/icons';
 import CmtDropdownMenu from '../../../../@coremat/CmtDropdownMenu';
-import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
 
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View History', icon: <Visibility /> }];
@@ -65,15 +63,7 @@ const KRITable = props => {
     getRiskIndicators();
   }, []);
 
-  // Export data to excel
-  const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(indicators);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    saveAs(blob, 'data.xlsx');
-  };
+  
 
   return (
     <>
@@ -186,17 +176,6 @@ const KRITable = props => {
           showNavigationButtons={true}
         />
         <Toolbar>
-          <Item location="before">
-            <Button
-              variant="outlined"
-              size={'small'}
-              color="primary"
-              onClick={exportToExcel}
-              // style={{ marginBottom: '10px' }}
-            >
-              Export to Excel
-            </Button>
-          </Item>
           <Item location="after" name="columnChooserButton" />
           <Item location="after" name="searchPanel" />
         </Toolbar>

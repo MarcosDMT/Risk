@@ -231,11 +231,11 @@ const IncidentContent = props => {
     subSection: '',
     rootCauses: [],
     riskImpact: [],
-    riskImpactAmount: '',
+    riskImpactAmount: 0,
     riskControlCat: '',
     controlActions: [],
-    lossTypeQuantity: '',
-    lossTypeQuantityTypeId: 0,
+    lossTypeQuantity: 0,
+    lossTypeQuantityTypeId: null,
     controls: '',
     riskOwner: '',
     riskIndicator: '',
@@ -373,15 +373,14 @@ const IncidentContent = props => {
   const chosenRisk = getAutoCompleteValue(risks, incidentDetails.riskUniverseId);
   console.log('CHOSEN ', chosenRisk);
 
-  const formattedField ={
-    lossTypeQuantityTypeId: chosenRisk?.riskAppetiteTypeId
-  }
-  console.log("THIS ",formattedField?.lossTypeQuantityTypeId)
-
-  // validate Associated Risk
-  const validateRisk = () => {
-    return incidentDetails.riskUniverseId !== null;
-  };
+  useEffect(() => {
+    if(chosenRisk){
+      setIncidentDetails({
+        ...incidentDetails,
+        lossTypeQuantityTypeId: chosenRisk.riskAppetiteTypeId
+      })
+    }
+  },[chosenRisk])
 
   return (
     <>
@@ -532,10 +531,10 @@ const IncidentContent = props => {
                               select
                               style={{ width: '90px' }}
                               label=""
-                              // value={incidentDetails.lossTypeQuantityTypeId}
-                              value={formattedField?.lossTypeQuantityTypeId}
+                              value={incidentDetails.lossTypeQuantityTypeId}
+                
                               onChange={e =>
-                                setIncidentDetails({ ...incidentDetails, lossTypeQuantityTypeId: formattedField?.lossTypeQuantityTypeId })
+                                setIncidentDetails({ ...incidentDetails, lossTypeQuantityTypeId: e.target.value })
                               }
                               InputProps={{
                                 disableUnderline: true,

@@ -24,7 +24,10 @@ import { PERMISSIONS } from '../../../../../@jumbo/constants/RolesConstants';
 import { useSelector, useDispatch } from 'react-redux';
 import RoleBasedGuard from '../../../../../@jumbo/hocs/RoleAuth';
 import { fetchIncidents } from '../../../../../redux/actions/RiskIncident';
-import moment from 'moment';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
+import DownloadIcon from '@mui/icons-material/Download';
+
 
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
@@ -101,6 +104,16 @@ const IncidentReport = props => {
   useEffect(() => {
     dispatch(fetchIncidents());
   }, []);
+
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(incidents);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
@@ -227,6 +240,17 @@ const IncidentReport = props => {
             showNavigationButtons={true}
           />
           <Toolbar>
+          <Item location="after">
+            <Button
+              variant="outlined"
+              size={'small'}
+              color="primary"
+              onClick={exportToExcel}
+              // style={{ marginBottom: '10px' }}
+            >
+              <DownloadIcon /> Export to Excel
+            </Button>
+          </Item>
             <Item location="before">
               <Typography color="primary" variant="h3">
                 Risk Incident

@@ -27,6 +27,12 @@ import { PERMISSIONS } from '../../../../../@jumbo/constants/RolesConstants';
 import { MdCalculate } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
 // import useStyles from '../../index.style';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
+import DownloadIcon from '@mui/icons-material/Download';
+import { fetchIndicator } from '../../../../../redux/actions/RiskIndicator';
+
+
 
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
@@ -46,36 +52,40 @@ const RiskIndicators = props => {
   // const classes = useStyles();
   const { setOpenDialog, onViewRisk } = props;
   const dispatch = useDispatch();
-  const { risks } = useSelector(({ riskUniverse }) => riskUniverse);
+  const { indicators } = useSelector(({ indicators }) => indicators);
   const userActions = data => getActions(userRole?.permissions);
   const { userRole } = useSelector(({ auth }) => auth);
   const history = useHistory();
 
+  const getRiskIndicators = async () => {
+    await dispatch(fetchIndicator());
+  };
+
   useEffect(() => {
-    dispatch(fetchRisks());
+    getRiskIndicators();
   }, []);
 
   const actionRiskOwners = ({ displayValue }) => {
     return displayValue?.map((value, index) => <li key={index}>{value.name}</li>);
   };
 
-  const onUpdateRisk = data => {
-    history.push({ pathname: '/risk-universe/update-risk', state: data });
-  };
-  const onAssessRisk = data => {
-    history.push({ pathname: '/risk-universe/assess-risk', state: data });
-  };
-  const onDeleteRisk = data => {
-    console.log(data);
-  };
+  // const onUpdateRisk = data => {
+  //   history.push({ pathname: '/risk-universe/update-risk', state: data });
+  // };
+  // const onAssessRisk = data => {
+  //   history.push({ pathname: '/risk-universe/assess-risk', state: data });
+  // };
+  // const onDeleteRisk = data => {
+  //   console.log(data);
+  // };
 
   const onMenuClick = (menu, data) => {
     if (menu.action === 'view') {
       onViewRisk(data);
-    } 
+    }
     // else if (menu.action === 'edit') {
     //   onUpdateRisk(data);
-    // } 
+    // }
     // else if (menu.action === 'delete') {
     //   onDeleteRisk(data);
     // }
@@ -94,13 +104,23 @@ const RiskIndicators = props => {
     );
   }
 
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(indicators);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
+
   return (
     <>
       <Grid style={{ marginTop: '40px' }}>
         <DataGrid
           id="kris"
           columnAutoWidth={true}
-          dataSource={risks}
+          dataSource={indicators}
           showColumnLines={true}
           height={'75vh'}
           showRowLines={true}
@@ -211,6 +231,18 @@ const RiskIndicators = props => {
                 Dashboard - Risk Indicators
               </Typography>
             </Item>
+            <Item location="after">
+              <Button
+                variant="outlined"
+                size={'small'}
+                color="primary"
+                onClick={exportToExcel}
+                // style={{ marginBottom: '10px' }}
+              >
+                <DownloadIcon /> Export to Excel
+              </Button>
+            </Item>
+
             {/* <Item location="after">
               <Typography color="primary" variant="h3">
                 Trend

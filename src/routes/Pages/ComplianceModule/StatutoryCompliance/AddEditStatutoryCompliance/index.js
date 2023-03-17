@@ -126,7 +126,7 @@ const AddEditStatutoryCompliance = () => {
     description: '',
     authority: '',
     riskUniverseId: null,
-    companyId: '',
+    companyId: null,
     organization: [
       {
         departmentId: null,

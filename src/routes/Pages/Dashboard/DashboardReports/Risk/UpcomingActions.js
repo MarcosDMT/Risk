@@ -25,6 +25,9 @@ import RoleBasedGuard from '../../../../../@jumbo/hocs/RoleAuth';
 import { MdCalculate } from 'react-icons/md';
 import { assessRiskUniverse, fetchRisks } from '../../../../../redux/actions/RiskUniverse';
 import { useDispatch } from 'react-redux';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
+import DownloadIcon from '@mui/icons-material/Download';
 
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
@@ -77,13 +80,13 @@ const UpcomingActions = props => {
   const onMenuClick = (menu, data) => {
     if (menu.action === 'view') {
       onViewRisk(data);
-    } 
+    }
     // else if (menu.action === 'edit') {
     //   onUpdateRisk(data);
-    // } 
+    // }
     // else if (menu.action === 'delete') {
     //   onDeleteRisk(data);
-    // } 
+    // }
     // else if (menu.action === 'assess') {
     //   onAssessRisk(data);
     // }
@@ -125,18 +128,15 @@ const UpcomingActions = props => {
     );
   }
 
-  const formatAmount = ({ displayValue,data }) =>{
+  const formatAmount = ({ displayValue, data }) => {
     let amount = data.riskImpactAmount;
-    displayValue = String(amount).replace(/(.)(?=(\d{3})+$)/g,'$1,')
-    return (
-      <Typography>{displayValue}</Typography>
-    )
-  }
+    displayValue = String(amount).replace(/(.)(?=(\d{3})+$)/g, '$1,');
+    return <Typography>{displayValue}</Typography>;
+  };
 
   useEffect(() => {
     dispatch(fetchRisks());
   }, []);
-
 
   function probabilityColor({ displayValue, data }) {
     return <Typography style={{ color: data?.riskProbabilityColor }}>{displayValue}</Typography>;
@@ -157,6 +157,16 @@ const UpcomingActions = props => {
   function residualColor({ displayValue, data }) {
     return <Typography style={{ color: data?.residualRiskColor }}>{displayValue}</Typography>;
   }
+
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(risks);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
@@ -399,6 +409,17 @@ const UpcomingActions = props => {
             <Typography color="primary" variant="h3">
               Dashboard - Upcoming Actions
             </Typography>
+          </Item>
+          <Item location="after">
+            <Button
+              variant="outlined"
+              size={'small'}
+              color="primary"
+              onClick={exportToExcel}
+              // style={{ marginBottom: '10px' }}
+            >
+              <DownloadIcon /> Export to Excel
+            </Button>
           </Item>
           {/* <Item location="after">
             <Typography color="primary" variant="h3">

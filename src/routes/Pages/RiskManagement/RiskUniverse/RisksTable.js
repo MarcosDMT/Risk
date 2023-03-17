@@ -29,9 +29,7 @@ import { MdCalculate } from 'react-icons/md';
 import { assessRiskUniverse } from '../../../../redux/actions/RiskUniverse';
 import { useDispatch } from 'react-redux';
 import { downloadTemplate } from '../../../../redux/actions/RiskUniverse';
-import DownloadIcon from '@mui/icons-material/Download';
-import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
+
 
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
@@ -147,12 +145,12 @@ const RisksTable = props => {
     return <></>;
   };
 
-  function probabilityColor({ displayValue, data }) {
-    if (!data?.riskProbabilityColor) {
-      return displayValue;
-    }
-    return <Typography style={{ color: data?.riskProbabilityColor ?? '' }}>{displayValue}</Typography>;
-  }
+  // function probabilityColor({ displayValue, data }) {
+  //   if (!data?.riskProbabilityColor) {
+  //     return displayValue;
+  //   }
+  //   return <Typography style={{ color: data?.riskProbabilityColor ?? '' }}>{displayValue}</Typography>;
+  // }
 
   function severityColor({ displayValue, data }) {
     if (!data.riskSeverityColor) {
@@ -174,16 +172,6 @@ const RisksTable = props => {
   //   }
   //   return <Typography style={{ color: data?.residualRiskColor ?? '' }}>{displayValue}</Typography>;
   // }
-
-  // Export data to excel
-  const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(risks);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    saveAs(blob, 'data.xlsx');
-  };
 
   return (
     <>
@@ -372,7 +360,7 @@ const RisksTable = props => {
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
-          cellRender={probabilityColor}
+          // cellRender={probabilityColor}
         />
         <Column
           dataField="riskSeverityActualName"
@@ -381,7 +369,7 @@ const RisksTable = props => {
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
-          cellRender={severityColor}
+          // cellRender={severityColor}
         />
         <Column
           dataField="riskVelocityName"
@@ -399,7 +387,7 @@ const RisksTable = props => {
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
-          cellRender={inherentColor}
+          // cellRender={inherentColor}
         />
         <Column
           dataField="riskScore"
@@ -453,13 +441,6 @@ const RisksTable = props => {
                 onClick={e => setOpenDialog(true)}
                 color="primary">
                 <FileUpload /> Import Risks
-              </Button>
-            </RoleBasedGuard>
-          </Item>
-          <Item location="before">
-            <RoleBasedGuard permission={PERMISSIONS.RISK_UNIVERSE.CREATE}>
-              <Button variant="outlined" size={'small'} onClick={exportToExcel} color="primary">
-                <DownloadIcon /> Export to Excel
               </Button>
             </RoleBasedGuard>
           </Item>
