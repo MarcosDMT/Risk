@@ -13,18 +13,19 @@ import {
   StateStoring,
   Toolbar,
 } from 'devextreme-react/data-grid';
-import { Link,useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Button } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import { FileUpload } from '@mui/icons-material';
 import { DataGrid } from 'devextreme-react';
 import useStyles from '../../index.style';
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { fetchIndicator } from '../../../../redux/actions/RiskIndicator';
 import { PERMISSIONS } from '../../../../@jumbo/constants/RolesConstants';
 import { MoreHoriz, Visibility } from '@material-ui/icons';
 import CmtDropdownMenu from '../../../../@coremat/CmtDropdownMenu';
-
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View History', icon: <Visibility /> }];
@@ -32,8 +33,8 @@ const getActions = permissions => {
 };
 
 const KRITable = props => {
-  const { indicators } = useSelector(({ indicators }) => indicators)
-  const dispatch = useDispatch()
+  const { indicators } = useSelector(({ indicators }) => indicators);
+  const dispatch = useDispatch();
   const history = useHistory();
   const { userRole } = useSelector(({ auth }) => auth);
   const userActions = data => getActions(userRole?.permissions);
@@ -42,7 +43,7 @@ const KRITable = props => {
 
   const onMenuClick = (menu, data) => {
     if (menu.action === 'view') {
-      history.push({pathname: '/risk-indicators/history', state: data})
+      history.push({ pathname: '/risk-indicators/history', state: data });
     }
   };
 
@@ -52,17 +53,27 @@ const KRITable = props => {
         items={userActions(data)}
         onItemClick={menu => onMenuClick(menu, data)}
         TriggerComponent={<MoreHoriz />}
-      />      
+      />
     );
   }
 
-  const getRiskIndicators = async() =>{
-    await dispatch(fetchIndicator())
-  }
+  const getRiskIndicators = async () => {
+    await dispatch(fetchIndicator());
+  };
 
-  useEffect(() =>{
+  useEffect(() => {
     getRiskIndicators();
-  },[])
+  }, []);
+
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(indicators);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
@@ -135,7 +146,7 @@ const KRITable = props => {
         <Column
           dataField="riskAppetiteAmount"
           minWidth={100}
-          caption="Risk Appetite"
+          caption="Risk Appetite Amount"
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
@@ -175,6 +186,17 @@ const KRITable = props => {
           showNavigationButtons={true}
         />
         <Toolbar>
+          <Item location="before">
+            <Button
+              variant="outlined"
+              size={'small'}
+              color="primary"
+              onClick={exportToExcel}
+              // style={{ marginBottom: '10px' }}
+            >
+              Export to Excel
+            </Button>
+          </Item>
           <Item location="after" name="columnChooserButton" />
           <Item location="after" name="searchPanel" />
         </Toolbar>

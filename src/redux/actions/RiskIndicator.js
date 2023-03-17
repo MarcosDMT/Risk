@@ -8,6 +8,7 @@ import { RISK_INDICATOR } from '../../@jumbo/constants/ActionTypes';
 export const fetchIndicator = () => {
   return async dispatch => {
     let axiosInstance = useAxios(dispatch);
+    fetchStart();
     await axiosInstance
       .get(`${API_URL.FETCH_INDICATOR}`)
       .then(res => {
