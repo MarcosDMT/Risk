@@ -523,53 +523,29 @@ const IncidentContent = props => {
                     <Grid item md={12} xs={12}>
                       <TextField
                         fullWidth
-                        value={chosenRisk?.riskAppetiteDirection}
+                        value={chosenRisk?.riskIndicator}
                         variant={'outlined'}
-                        label="Risk Apetite Direction"
+                        label="Risk Indicator"
                         disabled
                       />
                     </Grid>
                     <Grid item md={12} xs={12}>
                       <TextField
                         fullWidth
-                        value={chosenRisk?.riskProbabilityActualName}
+                        value={chosenRisk?.keyIndicatorFrequencyName}
                         variant={'outlined'}
-                        label="Probability"
+                        label="Frequency"
                         disabled
                       />
                     </Grid>
-                  {/* </GridContainer> */}
-
-                  {/* <GridContainer spacing={2}> */}
-                    <Grid item md={12} xs={12}>
-                      <TextField
-                        fullWidth
-                        value={chosenRisk?.riskSeverityActualName}
-                        variant={'outlined'}
-                        label="Severity"
-                        disabled
-                      />
-                    </Grid>
-
-                    {/* velocity */}
-                    <Grid item md={12} xs={12}>
-                      <TextField
-                        fullWidth
-                        value={chosenRisk?.riskVelocityName}
-                        variant={'outlined'}
-                        label="Velocity"
-                        disabled
-                      />
-                    </Grid>
-                  {/* </GridContainer> */}
 
                   <Grid item md={12} xs={12}>
                     <TextField
                       fullWidth
-                      label="Loss Type Quantity"
+                      label={`Risk Appetite Type <Chip>${chosenRisk?.riskAppetiteAmount}</Chip>`}
                       variant="outlined"
                       type={'number'}
-                      value={incidentDetails?.lossTypeQuantity}
+                      value={chosenRisk?.riskAppetiteTypeId}
                       onChange={e => setIncidentDetails({ ...incidentDetails, lossTypeQuantity: e.target.value })}
                       InputProps={{
                         startAdornment: (
@@ -598,6 +574,17 @@ const IncidentContent = props => {
                       }}
                     />
                   </Grid>
+
+                  <Grid item md={12} xs={12}>
+                      <TextField
+                        fullWidth
+                        value={chosenRisk?.riskAppetiteDirection}
+                        variant={'outlined'}
+                        label="Risk Appetite Direction"
+                        disabled
+                      />
+                    </Grid>
+
                   <Grid item md={12} xs={12}>
                     <Autocomplete
                       fullWidth
