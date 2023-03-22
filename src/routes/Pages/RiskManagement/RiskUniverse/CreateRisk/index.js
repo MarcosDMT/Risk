@@ -1833,7 +1833,7 @@ export const Preview = props => {
                         <>
                           <li>{org.departmentName}</li>
                           <li>{org.sectionName}</li>
-                          <li>{org.subsectionName}</li>
+                          <li>{org.subSectionName}</li>
                         </>
                       ))}
                     </td>
