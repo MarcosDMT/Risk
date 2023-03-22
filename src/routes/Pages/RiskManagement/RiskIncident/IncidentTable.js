@@ -91,6 +91,10 @@ const IncidentTable = props => {
     return displayValue?.map((value, index) => <li key={index}>{value.name}</li>);
   };
 
+  const incidentActions = ({ displayValue }) => {
+    return displayValue?.map((value, index) => <li key={index}>{value.name}</li>);
+  };
+
   const convertDate = ({ displayValue,data})=>{
     let formattedDate = data.incidentDate;
     displayValue = new Date(formattedDate).toLocaleDateString();
@@ -154,7 +158,7 @@ const IncidentTable = props => {
         <Column
           dataField="riskCategoryControlActualCategoryControlName"
           minWidth={100}
-          caption="Risk Control Category"
+          caption="Risk Category"
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
@@ -168,7 +172,7 @@ const IncidentTable = props => {
           allowFiltering={false}
         />
         <Column
-          dataField="lossTypeMeasure"
+          dataField="lossTypeQuantityTypeName"
           minWidth={100}
           caption="Loss Type Measure"
           allowHeaderFiltering={true}
@@ -184,12 +188,13 @@ const IncidentTable = props => {
           allowFiltering={false}
         />
         <Column
-          dataField="incidentAction"
+          dataField="incidentActions"
           minWidth={100}
           caption="Incident Action"
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
+          cellRender={incidentActions}
         />
         <Column
           dataField="incidentOwners"
@@ -207,6 +212,7 @@ const IncidentTable = props => {
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
+          cellRender={convertDate}
         />
         <Scrolling rowRenderingMode="virtual" />
         <Paging defaultPageSize={20} />

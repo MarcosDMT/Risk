@@ -14,7 +14,8 @@ import {
   Toolbar,
 } from 'devextreme-react/data-grid';
 import { Link, useHistory } from 'react-router-dom';
-import { Button } from '@material-ui/core';
+import { Button,Typography } from '@material-ui/core';
+import { Chip } from '@mui/material';
 import { AddCircle } from '@material-ui/icons';
 import { FileUpload } from '@mui/icons-material';
 import { DataGrid } from 'devextreme-react';
@@ -24,6 +25,9 @@ import { fetchIndicator } from '../../../../redux/actions/RiskIndicator';
 import { PERMISSIONS } from '../../../../@jumbo/constants/RolesConstants';
 import { MoreHoriz, Visibility } from '@material-ui/icons';
 import CmtDropdownMenu from '../../../../@coremat/CmtDropdownMenu';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+
 
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View History', icon: <Visibility /> }];
@@ -63,6 +67,30 @@ const KRITable = props => {
     getRiskIndicators();
   }, []);
 
+
+  const checkIfCurrentGreat = ({displayValue,data}) =>{
+    if(data?.currentStatus > data?.riskAppetiteAmount){
+      return <Chip variant="outlined" color="error" label={displayValue} />
+    }else{
+      return <Chip variant="outlined" color="success" label={displayValue} />
+    }
+  }
+
+  const checkIfPreviousGreat = ({displayValue,data}) =>{
+    if(data?.currentStatus > data?.riskAppetiteAmount){
+      return <Chip variant="outlined" color="error" label={displayValue} />
+    }else{
+      return <Chip variant="outlined" color="success" label={displayValue} />
+    }
+  }
+
+  const checkDirection = ({data}) =>{
+    if(data?.riskAppetiteDirection === 'Negative'){
+      return <ArrowUpwardIcon style={{ color: 'red' }} />;
+    }else if(data?.riskAppetiteDirection === 'Positive'){
+      return <ArrowUpwardIcon style={{ color: 'green' }} />;
+    }
+  }
   
 
   return (
@@ -126,7 +154,7 @@ const KRITable = props => {
           allowFiltering={false}
         />
         <Column
-          dataField="riskAppetiteTypeName"
+          dataField="riskAppetiteAmount"
           minWidth={100}
           caption="Risk Appetite"
           allowHeaderFiltering={true}
@@ -134,17 +162,9 @@ const KRITable = props => {
           allowFiltering={false}
         />
         <Column
-          dataField="riskAppetiteAmount"
+          dataField="frequencyName"
           minWidth={100}
-          caption="Risk Appetite Amount"
-          allowHeaderFiltering={true}
-          allowSearch={true}
-          allowFiltering={false}
-        />
-        <Column
-          dataField="riskAppetiteDirection"
-          minWidth={100}
-          caption="Risk Appetite Direction"
+          caption="Frequency"
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
@@ -156,6 +176,7 @@ const KRITable = props => {
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
+          cellRender={checkIfPreviousGreat}
         />
         <Column
           dataField="currentStatus"
@@ -164,6 +185,16 @@ const KRITable = props => {
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
+          cellRender={checkIfCurrentGreat}
+        />
+        <Column
+          dataField="riskAppetiteDirection"
+          minWidth={100}
+          caption="Risk Direction"
+          allowHeaderFiltering={true}
+          allowSearch={true}
+          allowFiltering={false}
+          cellRender={checkDirection}
         />
         <Scrolling rowRenderingMode="virtual" />
         <Paging defaultPageSize={20} />

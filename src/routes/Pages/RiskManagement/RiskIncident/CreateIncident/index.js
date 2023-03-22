@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Grid,
-  Chip,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -19,6 +18,7 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import {Chip} from '@mui/material';
 import FormControl from '@material-ui/core/FormControl';
 import { NotificationContainer } from 'react-notifications';
 import useStyles from '../../../Roles/index.style';
@@ -46,7 +46,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getAutoCompleteValue } from '../../../../../@jumbo/utils/commonHelper';
 import { createFilterOptions } from '@mui/material';
 import { CheckBoxOutlineBlank, CheckBoxOutlined } from '@mui/icons-material';
-import { addRiskIncident,updateIncident } from '../../../../../redux/actions/RiskIncident';
+import { addRiskIncident, updateIncident } from '../../../../../redux/actions/RiskIncident';
 import { fetchAppetiteTypes } from '../../../../../redux/actions/Utils';
 import CmtImage from '../../../../../@coremat/CmtImage';
 
@@ -175,13 +175,12 @@ const CreateIncident = () => {
                 <SuccessPage {...{ classes, handleReset, isUpdate }} />
               </Box>
             </Box>
-          ):(
+          ) : (
             <Box className={clsx(classes.inBuildAppContainer)}>
-            <SideBarIncident {...{ activeStep, handleNext, handlePrev, setActiveStep }} />
-            <IncidentContent {...{ classes, activeStep, handleNext, isUpdate, incidentDetails, setIncidentDetails }} />
-          </Box>
+              <SideBarIncident {...{ activeStep, handleNext, handlePrev, setActiveStep }} />
+              <IncidentContent {...{ classes, activeStep, handleNext, isUpdate, incidentDetails, setIncidentDetails }} />
+            </Box>
           )}
-          
         </Box>
       </PageContainer>
       <NotificationContainer />
@@ -239,7 +238,6 @@ const SideBarItem = props => {
   );
 };
 
-
 const SuccessPage = props => {
   const { classes, handleReset, isUpdate } = props;
   return (
@@ -263,7 +261,6 @@ const SuccessPage = props => {
     </Box>
   );
 };
-
 
 const IncidentContent = props => {
   const initialDetails = {
@@ -348,7 +345,7 @@ const IncidentContent = props => {
     if (value !== null) {
       setIncidentDetails({ ...incidentDetails, lossTypeId: parseInt(value.id) });
     } else {
-      setIncidentDetails({ ...incidentDetails, lossTypeId: null});
+      setIncidentDetails({ ...incidentDetails, lossTypeId: null });
     }
   };
 
@@ -409,12 +406,11 @@ const IncidentContent = props => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if(!isUpdate){
-    dispatch(addRiskIncident(incidentDetails, () => handleNext()));
-    }else{
+    if (!isUpdate) {
+      dispatch(addRiskIncident(incidentDetails, () => handleNext()));
+    } else {
       dispatch(updateIncident(incidentDetails, () => handleNext()));
     }
-
   };
 
   // get selected Risk
@@ -422,13 +418,13 @@ const IncidentContent = props => {
   console.log('CHOSEN ', chosenRisk);
 
   useEffect(() => {
-    if(chosenRisk){
+    if (chosenRisk) {
       setIncidentDetails({
         ...incidentDetails,
-        lossTypeQuantityTypeId: chosenRisk.riskAppetiteTypeId
-      })
+        lossTypeQuantityTypeId: chosenRisk.riskAppetiteTypeId,
+      });
     }
-  },[chosenRisk])
+  }, [chosenRisk]);
 
   return (
     <>
@@ -520,32 +516,32 @@ const IncidentContent = props => {
                     />
                   </Grid>
                   {/* <GridContainer spacing={2}> */}
-                    <Grid item md={12} xs={12}>
-                      <TextField
-                        fullWidth
-                        value={chosenRisk?.riskIndicator}
-                        variant={'outlined'}
-                        label="Risk Indicator"
-                        disabled
-                      />
-                    </Grid>
-                    <Grid item md={12} xs={12}>
-                      <TextField
-                        fullWidth
-                        value={chosenRisk?.keyIndicatorFrequencyName}
-                        variant={'outlined'}
-                        label="Frequency"
-                        disabled
-                      />
-                    </Grid>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      fullWidth
+                      value={chosenRisk?.riskIndicator}
+                      variant={'outlined'}
+                      label="Risk Indicator"
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      fullWidth
+                      value={chosenRisk?.keyIndicatorFrequencyName}
+                      variant={'outlined'}
+                      label="Frequency"
+                      disabled
+                    />
+                  </Grid>
 
                   <Grid item md={12} xs={12}>
                     <TextField
                       fullWidth
-                      label={`Risk Appetite Type <Chip>${chosenRisk?.riskAppetiteAmount}</Chip>`}
+                      label={`Risk Appetite Type`}
                       variant="outlined"
                       type={'number'}
-                      value={chosenRisk?.riskAppetiteTypeId}
+                      value={incidentDetails?.lossTypeQuantity}
                       onChange={e => setIncidentDetails({ ...incidentDetails, lossTypeQuantity: e.target.value })}
                       InputProps={{
                         startAdornment: (
@@ -555,20 +551,20 @@ const IncidentContent = props => {
                               select
                               style={{ width: '90px' }}
                               label=""
-                              value={incidentDetails.lossTypeQuantityTypeId}
-                
+                              value={chosenRisk?.riskAppetiteTypeId}
                               onChange={e =>
                                 setIncidentDetails({ ...incidentDetails, lossTypeQuantityTypeId: e.target.value })
                               }
                               InputProps={{
                                 disableUnderline: true,
                               }}>
-                              {appetiteTypes.map(option => (
+                              {appetiteTypes?.map(option => (
                                 <MenuItem key={option.id} value={option.id}>
                                   {option.name}
                                 </MenuItem>
                               ))}
                             </TextField>
+                              <Chip variant="outlined" color='success' label={chosenRisk?.riskAppetiteAmount ? chosenRisk?.riskAppetiteAmount : 'Not Set'} /> 
                           </InputAdornment>
                         ),
                       }}
@@ -576,14 +572,14 @@ const IncidentContent = props => {
                   </Grid>
 
                   <Grid item md={12} xs={12}>
-                      <TextField
-                        fullWidth
-                        value={chosenRisk?.riskAppetiteDirection}
-                        variant={'outlined'}
-                        label="Risk Appetite Direction"
-                        disabled
-                      />
-                    </Grid>
+                    <TextField
+                      fullWidth
+                      value={chosenRisk?.riskAppetiteDirection}
+                      variant={'outlined'}
+                      label="Risk Appetite Direction"
+                      disabled
+                    />
+                  </Grid>
 
                   <Grid item md={12} xs={12}>
                     <Autocomplete
@@ -767,7 +763,9 @@ export const Preview = props => {
         <tbody>
           <tr>
             <td className={classes.td}>Incident Title</td>
-            <td className={classes.td}>{incidentDetails.incidentTitle !== '' ? incidentDetails.incidentTitle : 'Not Set'}</td>
+            <td className={classes.td}>
+              {incidentDetails.incidentTitle !== '' ? incidentDetails.incidentTitle : 'Not Set'}
+            </td>
           </tr>
           <tr>
             <td className={classes.td}>Incident Narration</td>
@@ -784,7 +782,7 @@ export const Preview = props => {
           <tr>
             <td className={classes.td}>Incident Loss Type Quantity</td>
             <td className={classes.td}>
-              {incidentDetails.lossTypeQuantityTypeId !== '' ? incidentDetails.lossTypeQuantityTypeId : 'Not Set'}
+              {incidentDetails.lossTypeQuantity !== '' ? incidentDetails.lossTypeQuantity : 'Not Set'}
             </td>
           </tr>
           <tr>
