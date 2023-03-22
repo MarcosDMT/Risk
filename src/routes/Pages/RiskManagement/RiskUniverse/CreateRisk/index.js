@@ -671,7 +671,7 @@ export const RiskContent = props => {
     const formData = {
       riskProbabilityId: riskDetails.riskProbabilityId,
       riskSeverityId: riskDetails.riskSeverityId,
-      riskVelocity: riskDetails.riskVelocityId,
+      riskVelocity: riskDetails.riskVelocity,
     };
     const data = await dispatch(assessRiskUniverse(formData));
     if (data?.actualName && data?.actualValue) {
@@ -686,7 +686,7 @@ export const RiskContent = props => {
     const formData = {
       riskProbabilityId: riskDetails.riskProbabilityId,
       riskSeverityId: riskDetails.riskSeverityId,
-      riskVelocity: riskDetails.riskVelocityId,
+      riskVelocity: riskDetails.riskVelocity,
       controlRating: riskDetails.controlRating,
       riskCategoryControlId: riskDetails.riskCategoryControlId,
     };
@@ -722,7 +722,7 @@ export const RiskContent = props => {
     if (
       riskDetails.riskProbabilityId !== null &&
       riskDetails.riskSeverityId !== null &&
-      riskDetails.riskVelocityId !== null &&
+      riskDetails.riskVelocity !== null &&
       riskDetails.controlRating !== null &&
       riskDetails.riskCategoryControlId !== null
     ) {
@@ -731,7 +731,7 @@ export const RiskContent = props => {
   }, [
     riskDetails.riskProbabilityId,
     riskDetails.riskSeverityId,
-    riskDetails.riskVelocityId,
+    riskDetails.riskVelocity,
     riskDetails.controlRating,
     riskDetails.riskCategoryControlId,
   ]);
@@ -740,11 +740,11 @@ export const RiskContent = props => {
     if (
       riskDetails.riskProbabilityId !== null &&
       riskDetails.riskSeverityId !== null &&
-      riskDetails.riskVelocityId !== null
+      riskDetails.riskVelocity !== null
     ) {
       calculateInherentRisk();
     }
-  }, [riskDetails.riskProbabilityId, riskDetails.riskSeverityId, riskDetails.riskVelocityId]);
+  }, [riskDetails.riskProbabilityId, riskDetails.riskSeverityId, riskDetails.riskVelocity]);
 
   const handleOnSubSectionChange = (event, value) => {
     if (value !== null) {
