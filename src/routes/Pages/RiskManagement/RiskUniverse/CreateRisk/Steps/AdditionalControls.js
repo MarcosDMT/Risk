@@ -6,7 +6,9 @@ import GridContainer from '../../../../../../@jumbo/components/GridContainer';
 import AppTextInput from '../../../../../../@jumbo/components/Common/formElements/AppTextInput';
 import { Autocomplete } from '@material-ui/lab';
 import { getAutoCompleteValue } from '../../../../../../@jumbo/utils/commonHelper';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
+import { objectOf } from 'prop-types';
+import { fetchEnterpriseCompliance } from '../../../../../../redux/actions/Compliance';
 
 const complianceTypes = [
   { id: 1, name: 'Statutory Compliance' },
@@ -89,11 +91,14 @@ const ActionItems = props => {
 };
 const ActionForm = props => {
   const { riskDetails, setRiskDetails, index, handleOnAdd } = props;
-  const { statutoryComplianceData } = useSelector(({ compliance }) => compliance);
-  console.log('HAS SUB ', statutoryComplianceData);
+  const { statutoryComplianceData, enterpriseComplianceData } = useSelector(({ compliance }) => compliance);
+  console.log('HAS SUB ', enterpriseComplianceData);
+  const dispatch = useDispatch();
 
   // filter hasSubCompliance is true
-  const hasSubComplianceData = statutoryComplianceData.filter(data => data.hasSubCompliance === true);
+  const hasSubStatutory = statutoryComplianceData.filter(data => data.hasSubCompliance === true);
+  const hasSubEnterprise = enterpriseComplianceData.filter(data => data.hasSubCompliance === true);
+
 
   const handleOnComplianceType = e => {
     const { name, value } = e.target;
@@ -101,6 +106,7 @@ const ActionForm = props => {
     data[index] = { ...data[index], [name]: value };
     setRiskDetails({ ...riskDetails, complianceType: data });
   };
+
   const handleOnChange = e => {
     const { name, value } = e.target;
     let data = riskDetails.additionalControlActions;
@@ -137,12 +143,12 @@ const ActionForm = props => {
     setRiskDetails({ ...riskDetails, additionalControlActions: data });
   };
   const handleComplianceOption = (e, values) => {
-    let data = riskDetails.additionalControlActions;
+    let data = riskDetails?.additionalControlActions;
     data[index] = {
       ...data[index],
       complianceDetails: {
-        ...riskDetails.additionalControlActions[index].complianceDetails,
-        subId: values.id,
+        ...riskDetails?.additionalControlActions[index]?.complianceDetails,
+        subId: values?.id,
       },
     };
     setRiskDetails({ ...riskDetails, additionalControlActions: data });
@@ -158,6 +164,20 @@ const ActionForm = props => {
     };
     setRiskDetails({ ...riskDetails, additionalControlActions: data });
   };
+
+  const complianceTypes = [
+    { id: 1, name: 'Statutory Compliance' },
+    { id: 2, name: 'Legal Compliance' },
+    { id: 3, name: 'Enterprise Compliance' },
+  ];
+
+  const getEnterpriseSub = async() =>{
+    await dispatch(fetchEnterpriseCompliance())
+  }
+
+  useEffect(() =>{
+    getEnterpriseSub();
+  },[])
 
   return (
     <>
@@ -249,26 +269,52 @@ const ActionForm = props => {
               </TextField>
             </Grid>
             <Grid item sm={12} md={12} xs={12}>
-              <Autocomplete
-                fullWidth
-                options={hasSubComplianceData}
-                value={getAutoCompleteValue(
-                  hasSubComplianceData,
-                  riskDetails?.additionalControlActions[index]?.complianceDetails?.subId,
-                )}
-                getOptionLabel={option => option.title}
-                onChange={handleComplianceOption}
-                renderOption={(option, { selected }) => <span key={option.id}>{option.title}</span>}
-                renderInput={params => (
-                  <TextField
+              {riskDetails?.additionalControlActions[index]?.complianceType === 'Statutory Compliance' ? <>
+                <Autocomplete
                     fullWidth
-                    {...params}
-                    size={'small'}
-                    variant={'outlined'}
-                    label="Link additional controls to an existing compliance requirement"
+                    options={hasSubStatutory}
+                    value={getAutoCompleteValue(
+                      hasSubStatutory,
+                      riskDetails?.additionalControlActions[index]?.complianceDetails?.subId,
+                    )}
+                    getOptionLabel={option => option.title}
+                    onChange={handleComplianceOption}
+                    renderOption={(option, { selected }) => <span key={option.id}>{option.title}</span>}
+                    renderInput={params => (
+                      <TextField
+                        fullWidth
+                        {...params}
+                        size={'small'}
+                        variant={'outlined'}
+                        label="Link additional controls to an existing compliance requirement"
+                      />
+                    )}
                   />
-                )}
-              />
+              </> : ''}
+
+              {riskDetails?.additionalControlActions[index]?.complianceType === 'Enterprise Compliance' ? <>
+                <Autocomplete
+                    fullWidth
+                    options={hasSubEnterprise}
+                    value={getAutoCompleteValue(
+                      hasSubEnterprise,
+                      riskDetails?.additionalControlActions[index]?.complianceDetails?.subId,
+                    )}
+                    getOptionLabel={option => option.title}
+                    onChange={handleComplianceOption}
+                    renderOption={(option, { selected }) => <span key={option.id}>{option.title}</span>}
+                    renderInput={params => (
+                      <TextField
+                        fullWidth
+                        {...params}
+                        size={'small'}
+                        variant={'outlined'}
+                        label="Link additional controls to an existing compliance requirement"
+                      />
+                    )}
+                  />
+              </> : ''}
+
             </Grid>
           </>
         )}

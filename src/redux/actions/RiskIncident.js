@@ -52,6 +52,35 @@ export const fetchIncidents = () => {
   };
 };
 
+// Updte Incident
+export const updateIncident = (updatedData, callBackFunc) => {
+  return async dispatch => {
+    let axiosInstance = useAxios(dispatch);
+    dispatch(fetchStart());
+    await axiosInstance
+      .post(`${API_URL.UPDATE_INCIDENT}`, updatedData)
+      .then(res => {
+        if (res.status === REQUEST_STATUS.STATUS_OK) {
+          dispatch(fetchSuccess('Incident Updated Successfully!'));
+          dispatch({
+            type: RISK_INCIDENT.UPDATE_ONE,
+            payload: updatedData,
+          });
+          callBackFunc();
+        }
+      })
+      .catch(err => {
+        let error = JSON.parse(err.response.data);
+        let convertedObject = Object.entries(error.errors);
+        console.log('CONVERTED ', convertedObject);
+        if (err.response.status === 400) {
+          dispatch(fetchError(convertedObject[0][1][0]));
+        }
+      });
+  };
+};
+
+
 export const deleteIncident = data => {
   return async dispatch => {
     let axiosInstance = useAxios(dispatch);

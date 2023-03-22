@@ -110,8 +110,8 @@ const initialDetails = {
   riskOwner: '',
   riskOwners: [],
   riskIndicator: '',
-  keyIndicatorFrequencyId: null,
-  keyIndicatorFrequencyName: '',
+  keyIndicatorFrequencyId: 0,
+  // keyIndicatorFrequencyName: '',
   riskAppetiteAmount: 0,
   riskAppetiteTypeName: '',
   riskAppetiteTypeId: null,
@@ -896,6 +896,14 @@ export const RiskContent = props => {
     }
   };
 
+  const handleFrequency = (e, value) => {
+    if (value !== null) {
+      setRiskDetails({ ...riskDetails, keyIndicatorFrequencyId: value.id });
+    } else {
+      setRiskDetails({ ...riskDetails, keyIndicatorFrequencyId: null });
+    }
+  };
+
   useEffect(() => {
     setRiskDetails({
       ...riskDetails,
@@ -904,6 +912,11 @@ export const RiskContent = props => {
       riskImpactCurrency: currencies[0]?.name,
     });
   }, []);
+
+
+  // get value of selected frequency to display in preview
+  const selectedFrequency = getAutoCompleteValue(riskFrequencies, riskDetails.keyIndicatorFrequencyId);
+  console.log("SELECTED ",selectedFrequency)
 
   return (
     <>
@@ -1105,7 +1118,18 @@ export const RiskContent = props => {
                     />
                   </Grid>
                   <Grid item md={12} xs={12}>
-                    <AppSelectBox
+                  <Autocomplete
+                      fullWidth
+                      options={riskFrequencies}
+                      onChange={handleFrequency}
+                      value={getAutoCompleteValue(riskFrequencies, riskDetails?.keyIndicatorFrequencyId)}
+                      getOptionLabel={option => option.name}
+                      renderOption={(option, { selected }) => <span key={option.id}>{option.name}</span>}
+                      renderInput={params => (
+                        <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Frequency" />
+                      )}
+                    />
+                    {/* <AppSelectBox
                       fullWidth
                       data={riskFrequencies}
                       label="Risk Indicator Frequency"
@@ -1114,7 +1138,7 @@ export const RiskContent = props => {
                       labelKey="name"
                       value={riskDetails?.keyIndicatorFrequencyId}
                       onChange={handleOnFrequencyChange}
-                    />
+                    /> */}
                   </Grid>
                   <Grid item md={12} xs={12}>
                     <TextField
@@ -1481,7 +1505,7 @@ export const RiskContent = props => {
 
             {activeStep === steps.length - 1 && (
               <Box width={'100%'}>
-                <Preview riskDetails={riskDetails} />
+                <Preview riskDetails={riskDetails} selectedFrequency={selectedFrequency} />
               </Box>
             )}
           </Box>
@@ -1542,10 +1566,9 @@ export const RiskContent = props => {
 export const Preview = props => {
   const [expanded, setExpanded] = React.useState(false);
   const [activeStep, setActiveStep] = React.useState(0);
-  const { riskDetails, isView, index } = props;
+  const { riskDetails, isView, index,selectedFrequency } = props;
   const { riskFrequencies } = useSelector(({ utils }) => utils);
 
-  const selectedFrequency = getAutoCompleteValue(riskFrequencies, riskDetails.keyIndicatorFrequencyId);
 
   const useStyles = makeStyles(theme => ({
     isActive: {
@@ -1714,7 +1737,7 @@ export const Preview = props => {
                     <td className={classes.td}>{selectedFrequency ? selectedFrequency.name : 'Not Set'}</td>
                   </tr>
                   <tr>
-                    <td className={classes.td}>Risk Appetite in {riskDetails.riskAppetiteTypeName}</td>
+                    <td className={classes.td}>Risk Appetite Amount {riskDetails.riskAppetiteTypeName}</td>
                     <td className={classes.td}>
                       {riskDetails.riskAppetiteAmount !== '' ? riskDetails.riskAppetiteAmount : 'Not Set'}
                     </td>
@@ -1861,12 +1884,12 @@ export const Preview = props => {
                       {action.complianceDetails.priority !== '' ? action.complianceDetails.priority : 'Not Set'}
                     </td>
                   </tr>
-                  <tr>
+                  {/* <tr>
                     <td className={classes.td}>Frequency</td>
                     <td className={classes.td}>
-                      {action.complianceDetails.frequency !== '' ? action.complianceDetails.frequency : 'Not Set'}
+                      {selectedFrequency?.name !== '' ? selectedFrequency?.name : 'Not Set'}
                     </td>
-                  </tr>
+                  </tr> */}
                   <tr>
                     <td className={classes.td}>Submission Deadline</td>
                     <td className={classes.td}>

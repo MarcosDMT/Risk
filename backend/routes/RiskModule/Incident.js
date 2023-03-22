@@ -45,6 +45,31 @@ router.get("/", async (req, res) => {
   }
 });
 
+
+//UPDATE RISK INCIDENT
+router.post('/update', async (req, res) => {
+  try {
+    const formData = req.body;
+    const options = {
+      headers: {
+        Authorization: req.header('Authorization'),
+      },
+      json: true,
+    };
+    const url = `${API_URL}`;
+    await needle('put', url, formData, options)
+      .then(response => {
+        res.status(response.statusCode).json(response.body);
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
+  } catch (e) {
+    res.status(500).json(e);
+  }
+});
+
+
 router.post("/delete", async (req, res) => {
   try {
     const formData = req.body;

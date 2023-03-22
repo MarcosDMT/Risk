@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import GridContainer from '../../../../../../@jumbo/components/GridContainer';
 import { Box, Button, Grid } from '@mui/material';
 import { Autocomplete } from '@material-ui/lab';
@@ -7,6 +7,7 @@ import AppTextInput from '../../../../../../@jumbo/components/Common/formElement
 import AppSelectBox from '../../../../../../@jumbo/components/Common/formElements/AppSelectBox';
 import { useSelector } from 'react-redux';
 import { DatePicker } from '@material-ui/pickers';
+import { getAutoCompleteValue } from '../../../../../../@jumbo/utils/commonHelper';
 
 const options = ['Both', 'Quantitative', 'Qualitative'];
 const ControlsImpactStatus = props => {
@@ -96,13 +97,25 @@ const ControlsImpactStatus = props => {
     });
   };
 
-  const handleFrequencyChange = e => {
+  // const handleFrequencyChange = e => {
+  //   let data = riskDetails.additionalControlActions;
+  //   data[index] = {
+  //     ...data[index],
+  //     complianceDetails: {
+  //       ...riskDetails.additionalControlActions[index].complianceDetails,
+  //       frequencyId: e.target.value,
+  //     },
+  //   };
+  //   setRiskDetails({ ...riskDetails, additionalControlActions: data });
+  // };
+
+  const handleFrequency = (e, value) => {
     let data = riskDetails.additionalControlActions;
     data[index] = {
       ...data[index],
       complianceDetails: {
         ...riskDetails.additionalControlActions[index].complianceDetails,
-        frequencyId: e.target.value,
+        frequencyId: value.id,
       },
     };
     setRiskDetails({ ...riskDetails, additionalControlActions: data });
@@ -235,7 +248,16 @@ const ControlsImpactStatus = props => {
           />
         </Grid>
         <Grid item md={12} xs={12}>
-          <AppSelectBox
+          <Autocomplete
+            fullWidth
+            options={complianceFrequencies}
+            onChange={handleFrequency}
+            value={getAutoCompleteValue(complianceFrequencies,riskDetails?.additionalControlActions[index]?.complianceDetails?.frequencyId)}
+            getOptionLabel={option => option.name}
+            renderOption={(option, { selected }) => <span key={option.id}>{option.name}</span>}
+            renderInput={params => <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Frequency" />}
+          />
+          {/* <AppSelectBox
             fullWidth
             data={complianceFrequencies}
             label="Frequency"
@@ -244,7 +266,7 @@ const ControlsImpactStatus = props => {
             labelKey="name"
             value={riskDetails?.additionalControlActions[index]?.complianceDetails.frequencyId}
             onChange={handleFrequencyChange}
-          />
+          /> */}
         </Grid>
         <Grid item md={12} xs={12}>
           {/* <DatePicker

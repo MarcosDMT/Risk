@@ -108,6 +108,7 @@ export const API_URL = {
 
   //------------------- Risk Incident -----------------//
   CREATE_INCIDENT: 'api/risk/risk-incident/create',
+  UPDATE_INCIDENT: 'api/risk/risk-incident/update',
   FETCH_INCIDENT: 'api/risk/risk-incident/',
   DELETE_INCIDENT: 'api/risk/risk-incident/delete',
 

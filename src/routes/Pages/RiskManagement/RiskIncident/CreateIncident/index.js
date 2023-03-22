@@ -46,8 +46,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getAutoCompleteValue } from '../../../../../@jumbo/utils/commonHelper';
 import { createFilterOptions } from '@mui/material';
 import { CheckBoxOutlineBlank, CheckBoxOutlined } from '@mui/icons-material';
-import { addRiskIncident } from '../../../../../redux/actions/RiskIncident';
+import { addRiskIncident,updateIncident } from '../../../../../redux/actions/RiskIncident';
 import { fetchAppetiteTypes } from '../../../../../redux/actions/Utils';
+import CmtImage from '../../../../../@coremat/CmtImage';
 
 const initialBreadcrumbs = [
   { label: HEADER.DASHBOARD, link: '/' },
@@ -144,6 +145,12 @@ const CreateIncident = () => {
     setActiveStep(activeStep - 1);
   };
 
+  const handleReset = () => {
+    setIncidentDetails(initialDetails);
+    setIsUpdate(false);
+    setActiveStep(0);
+  };
+
   useEffect(() => {
     if (location.state !== undefined) {
       setBreadcrumbs([...breadcrumbs, { label: HEADER.UPDATE_INCIDENT, isActive: true }]);
@@ -161,10 +168,20 @@ const CreateIncident = () => {
       <PageContainer heading={isUpdate ? HEADER.UPDATE_INCIDENT : HEADER.CREATE_INCIDENT} breadcrumbs={breadcrumbs}>
         <Box className={classes.inBuildAppCard}>
           <AppHeader />
-          <Box className={clsx(classes.inBuildAppContainer)}>
+
+          {activeStep === steps.length ? (
+            <Box className={clsx(classes.inBuildAppContainer)}>
+              <Box width={'100%'} m={5}>
+                <SuccessPage {...{ classes, handleReset, isUpdate }} />
+              </Box>
+            </Box>
+          ):(
+            <Box className={clsx(classes.inBuildAppContainer)}>
             <SideBarIncident {...{ activeStep, handleNext, handlePrev, setActiveStep }} />
-            <IncidentContent {...{ classes, activeStep, handleNext, incidentDetails, setIncidentDetails }} />
+            <IncidentContent {...{ classes, activeStep, handleNext, isUpdate, incidentDetails, setIncidentDetails }} />
           </Box>
+          )}
+          
         </Box>
       </PageContainer>
       <NotificationContainer />
@@ -221,6 +238,33 @@ const SideBarItem = props => {
     </React.Fragment>
   );
 };
+
+
+const SuccessPage = props => {
+  const { classes, handleReset, isUpdate } = props;
+  return (
+    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
+      <CmtImage src={'/images/ic_ok.svg'} style={{ width: '50px' }} />
+      <p className={classes.instructions} style={{ marginTop: '10px' }}>
+        <b>Incident was {isUpdate ? 'updated' : 'created'} successfully!</b>
+      </p>
+      <Box mt={10}>
+        <Link to={'/risk-incident'}>
+          <Button color={'primary'} variant={'contained'}>
+            Back to Incident Dashboard
+          </Button>
+        </Link>
+        {!isUpdate && (
+          <Button onClick={handleReset} className={classes.button}>
+            Create New Incident
+          </Button>
+        )}
+      </Box>
+    </Box>
+  );
+};
+
+
 const IncidentContent = props => {
   const initialDetails = {
     riskEvent: '',
@@ -246,7 +290,7 @@ const IncidentContent = props => {
     severity: '',
     residualRisk: '',
   };
-  const { classes, activeStep, handleNext, incidentDetails, setIncidentDetails } = props;
+  const { classes, activeStep, handleNext, isUpdate, incidentDetails, setIncidentDetails } = props;
   const [selectedIncidentDate, handleSelectedIncidentDate] = useState(new Date());
   const [selectedActionDate, handleSelectedActionDate] = useState(new Date());
   const [actions, setActions] = useState([]);
@@ -365,8 +409,12 @@ const IncidentContent = props => {
 
   const handleSubmit = e => {
     e.preventDefault();
-
+    if(!isUpdate){
     dispatch(addRiskIncident(incidentDetails, () => handleNext()));
+    }else{
+      dispatch(updateIncident(incidentDetails, () => handleNext()));
+    }
+
   };
 
   // get selected Risk
