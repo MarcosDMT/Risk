@@ -27,6 +27,7 @@ import { MoreHoriz, Visibility } from '@material-ui/icons';
 import CmtDropdownMenu from '../../../../@coremat/CmtDropdownMenu';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import HeightIcon from '@mui/icons-material/Height';
 
 
 const getActions = permissions => {
@@ -86,11 +87,14 @@ const KRITable = props => {
 
   const checkDirection = ({data}) =>{
     if(data?.riskAppetiteDirection === 'Negative'){
-      return <ArrowUpwardIcon style={{ color: 'red' }} />;
+      return <ArrowDownwardIcon />;
     }else if(data?.riskAppetiteDirection === 'Positive'){
       return <ArrowUpwardIcon style={{ color: 'green' }} />;
+    }else if(data?.riskAppetiteDirection === 'Stable'){
+       return <HeightIcon style={{ color: 'orange',transform:'rotate(90deg)' }} />
     }
   }
+
   
 
   return (
