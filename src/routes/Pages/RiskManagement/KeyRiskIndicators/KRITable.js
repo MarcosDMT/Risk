@@ -87,7 +87,7 @@ const KRITable = props => {
 
   const checkDirection = ({data}) =>{
     if(data?.riskAppetiteDirection === 'Negative'){
-      return <ArrowDownwardIcon />;
+      return <ArrowDownwardIcon style={{ color: 'red' }} />;
     }else if(data?.riskAppetiteDirection === 'Positive'){
       return <ArrowUpwardIcon style={{ color: 'green' }} />;
     }else if(data?.riskAppetiteDirection === 'Stable'){

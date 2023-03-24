@@ -130,6 +130,14 @@ const IncidentTable = props => {
           allowFiltering={false}
         />
         <Column
+          dataField="incidentTitle"
+          minWidth={100}
+          caption="Incident Title"
+          allowHeaderFiltering={true}
+          allowSearch={true}
+          allowFiltering={false}
+        />
+        <Column
           dataField="narration"
           minWidth={100}
           caption="Incident Narration"
