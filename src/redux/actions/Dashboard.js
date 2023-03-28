@@ -14,7 +14,7 @@ export const getUniverseDashboardData = data => {
           type: UNIVERSEDASHBOARD.GET_UNIVERSE_DATA,
           payload: res.data,
         });
-        dispatch(fetchSuccess('Data fetched Successfully!'));
+        dispatch(fetchSuccess('Dashboard Populated Successfully!'));
       })
       .catch(err => {
         dispatch(fetchError(err.message));

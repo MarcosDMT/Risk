@@ -167,6 +167,31 @@ router.post("/comply", async (req, res) => {
   }
 });
 
+
+
+//APPROVE COMPLIANCE
+router.post("/approve", async (req, res) => {
+  try {
+    const formData = req.body;
+    const options = {
+      headers: {
+        Authorization: req.header("Authorization")
+      },
+      json: true
+    };
+    const url = `${API_URL}/approve/${formData.id}`;
+    await needle("post", url, formData, options)
+      .then(response => {
+        res.status(response.statusCode).json(response.body);
+      })
+      .catch(error => {
+        res.status(500).json(error);
+      });
+  } catch (e) {
+    res.status(500).json(e);
+  }
+});
+
 //COMPLY ACTION
 router.post("/approve", async (req, res) => {
   try {

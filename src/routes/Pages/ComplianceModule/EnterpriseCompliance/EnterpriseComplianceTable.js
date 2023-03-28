@@ -15,7 +15,8 @@ import {
   Toolbar,
 } from 'devextreme-react/data-grid';
 import { Link } from 'react-router-dom';
-import { Button, Chip,Box } from '@material-ui/core';
+import { Button,Box } from '@material-ui/core';
+import { Chip } from '@mui/material';
 import { FileUpload } from '@mui/icons-material';
 import { DataGrid } from 'devextreme-react';
 import useStyles from '../../index.style';
@@ -31,7 +32,7 @@ import {
 } from '../../../../redux/actions/Compliance';
 import { useDispatch, useSelector } from 'react-redux';
 import HistoryIcon from '@mui/icons-material/History';
-
+import { approveCompliance } from '../../../../redux/actions/Compliance';
 
 const getActions = (data, viewOnly) => {
   const actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
@@ -147,6 +148,27 @@ const EnterpriseComplianceTable = props => {
     return <Typography>{displayValue}</Typography>;
   };
 
+  const submitApproval = async(data) =>{
+    await dispatch(approveCompliance(data))
+    await dispatch(fetchEnterpriseComplianceSub(data))
+  }
+
+  function approve({ displayValue, data }) {
+    if (data?.isApproved === null) {
+      return (
+        <Chip
+          title={'Click Here'}
+          label={<Typography>Approve</Typography>}
+          onClick={() => dispatch(submitApproval({ id: data?.id }))}
+          variant={'outlined'}
+          color={'success'}
+          size={'small'}
+        />
+      );
+    }else if(data?.isApproved === true){
+      return <Typography>{displayValue}</Typography>
+    }
+  }
 
   return (
     <>
@@ -178,7 +200,6 @@ const EnterpriseComplianceTable = props => {
           cellRender={actionLink}
         />
         <Column
-          fixed={true}
           fixedPosition="left"
           dataField="title"
           width={200}
@@ -227,6 +248,7 @@ const EnterpriseComplianceTable = props => {
           allowSearch={true}
           allowFiltering={false}
           allowHiding={true}
+          cellRender={approve}
         />
         <Column
           dataField="authority"

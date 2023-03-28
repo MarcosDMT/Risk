@@ -303,6 +303,14 @@ export const calculateResidualRisk = data => async dispatch => {
   return null;
 };
 
+const formatToastMessage = (err) =>{
+  let error = JSON.parse(err.response.data);
+  let convertedObject = Object.entries(error.errors);
+  let result = convertedObject?.map(item => item[1][0])
+
+  return result;
+}
+
 export const addRisk = (data, callBackFunc) => {
   return async dispatch => {
     let axiosInstance = useAxios(dispatch);
@@ -349,12 +357,10 @@ export const addRisk = (data, callBackFunc) => {
           dispatch(fetchError(res.data.message));
         }
       })
-      .catch(err => {
-        let error = JSON.parse(err.response.data);
-        let convertedObject = Object.entries(error.errors);
-        console.log('CONVERTED ', convertedObject);
+       .catch(err => {
+        
         if (err.response.status === 400) {
-          dispatch(fetchError(convertedObject[0][1][0]));
+          dispatch(fetchError(formatToastMessage(err)));
         }
       });
   };
@@ -383,11 +389,8 @@ export const updateRisk = (updatedData, callBackFunc) => {
         }
       })
       .catch(err => {
-        let error = JSON.parse(err.response.data);
-        let convertedObject = Object.entries(error.errors);
-        console.log('CONVERTED ', convertedObject);
         if (err.response.status === 400) {
-          dispatch(fetchError(convertedObject[0][1][0]));
+          dispatch(fetchError(formatToastMessage(err)));
         }
       });
   };

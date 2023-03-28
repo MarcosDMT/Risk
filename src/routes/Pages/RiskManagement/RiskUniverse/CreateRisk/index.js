@@ -78,6 +78,7 @@ import ControlsAssignment from './Steps/ControlsAssignment';
 import ControlsImpactStatus from './Steps/ControlsImpactStatus';
 import { fetchStatutoryCompliance } from '../../../../../redux/actions/Compliance';
 import Paper from '@mui/material/Paper';
+import { controllers } from 'chart.js';
 
 const initialBreadcrumbs = [
   { label: HEADER.DASHBOARD, link: '/' },
@@ -507,6 +508,7 @@ export const RiskContent = props => {
     emails: [],
     complianceType: '',
     complianceDetails: {
+      id: null,
       title: '',
       description: '',
       authority: '',
@@ -1703,7 +1705,7 @@ export const Preview = props => {
                   <tr>
                     <td className={classes.td}>Risk Impact Amount in {riskDetails.riskImpactCurrency}</td>
                     <td className={classes.td}>
-                      {riskDetails.riskImpactAmount !== '' ? riskDetails.riskImpactAmount : 'Not Set'}
+                      {riskDetails.riskImpactAmount !== 0 ? riskDetails.riskImpactAmount : 'Not Set'}
                     </td>
                   </tr>
                   <tr>
@@ -1739,7 +1741,7 @@ export const Preview = props => {
                   <tr>
                     <td className={classes.td}>Risk Appetite Amount {riskDetails.riskAppetiteTypeName}</td>
                     <td className={classes.td}>
-                      {riskDetails.riskAppetiteAmount !== '' ? riskDetails.riskAppetiteAmount : 'Not Set'}
+                      {riskDetails.riskAppetiteAmount !== 0 ? riskDetails.riskAppetiteAmount : 'Not Set'}
                     </td>
                   </tr>
                   <tr>

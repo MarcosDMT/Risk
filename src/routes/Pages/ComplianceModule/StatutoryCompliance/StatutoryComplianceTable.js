@@ -10,7 +10,8 @@ import {
   Paging,
   SearchPanel,
 } from 'devextreme-react/data-grid';
-import { Chip,Box,Button } from '@material-ui/core';
+import { Box,Button } from '@material-ui/core';
+import { Chip } from '@mui/material';
 import { DataGrid } from 'devextreme-react';
 import { Delete, Edit, MoreHoriz, Visibility } from '@material-ui/icons';
 import CmtDropdownMenu from '../../../../@coremat/CmtDropdownMenu';
@@ -22,6 +23,8 @@ import {
   fetchStatutoryCompliance,
   fetchStatutoryComplianceMain,
   fetchStatutoryComplianceSub,
+  approveCompliance,
+  approveStatutoryCompliance
 } from '../../../../redux/actions/Compliance';
 
 
@@ -114,6 +117,36 @@ const StatutoryComplianceTable = props => {
     );
   }
 
+  const submitApproval = async(data) =>{
+    await dispatch(approveStatutoryCompliance(data))
+    await dispatch(fetchStatutoryComplianceSub(data))
+  }
+
+
+  function approve({ displayValue, data }) {
+    if(data?.isApproved === null){
+      return (
+        <Chip
+          title={'Click Here'}
+          label={<Typography>Approve</Typography>}
+          onClick={()=> dispatch(submitApproval({id: data?.id}))}
+          variant={'outlined'}
+          color={'success'}
+          size={'small'}
+        />
+      );
+    }else if(data?.isApproved === true){
+      return <Typography>{displayValue}</Typography>
+    }
+    
+  }
+
+  const convertDate = ({ displayValue, data }) => {
+    let formattedDate = data.submissionDeadline;
+    displayValue = new Date(formattedDate).toLocaleDateString();
+    return <Typography>{displayValue}</Typography>;
+  };
+
 
   return (
     <>
@@ -145,7 +178,6 @@ const StatutoryComplianceTable = props => {
           cellRender={actionLink}
         />
         <Column
-          fixed={true}
           fixedPosition="left"
           dataField="title"
           width={200}
@@ -181,9 +213,8 @@ const StatutoryComplianceTable = props => {
           caption={'Submission Deadline'}
           allowHeaderFiltering={true}
           allowSearch={true}
-          dataType={'date'}
-          format={'dd/MM/yyyy'}
           allowFiltering={true}
+          cellRender={convertDate}
         />
         <Column
           dataField="approvalStatus"
@@ -191,9 +222,10 @@ const StatutoryComplianceTable = props => {
           caption="Approval Status"
           allowHeaderFiltering={true}
           allowSearch={true}
-          allowFiltering={false}
           allowHiding={true}
-        />
+          allowFiltering={false}
+          cellRender={approve}
+          />
         <Column
           dataField="authority"
           minWidth={100}

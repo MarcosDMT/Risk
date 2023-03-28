@@ -13,6 +13,7 @@ import {
   StateStoring,
   Toolbar,
 } from 'devextreme-react/data-grid';
+import { Chip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { Button, Typography, Grid } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
@@ -31,6 +32,9 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import DownloadIcon from '@mui/icons-material/Download';
 import { fetchIndicator } from '../../../../../redux/actions/RiskIndicator';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import HeightIcon from '@mui/icons-material/Height';
 
 
 
@@ -114,6 +118,34 @@ const RiskIndicators = props => {
     saveAs(blob, 'data.xlsx');
   };
 
+  const checkIfCurrentGreat = ({displayValue,data}) =>{
+    if(data?.currentStatus > data?.riskAppetiteAmount){
+      return <Chip variant="outlined" color="error" label={displayValue} />
+    }else{
+      return <Chip variant="outlined" color="success" label={displayValue} />
+    }
+  }
+
+  const checkIfPreviousGreat = ({displayValue,data}) =>{
+    if(data?.currentStatus > data?.riskAppetiteAmount){
+      return <Chip variant="outlined" color="error" label={displayValue} />
+    }else{
+      return <Chip variant="outlined" color="success" label={displayValue} />
+    }
+  }
+
+  const checkDirection = ({data}) =>{
+    if(data?.riskAppetiteDirection === 'Negative'){
+      return <ArrowDownwardIcon style={{ color: 'red' }} />;
+    }else if(data?.riskAppetiteDirection === 'Positive'){
+      return <ArrowUpwardIcon style={{ color: 'green' }} />;
+    }else if(data?.riskAppetiteDirection === 'Stable'){
+       return <HeightIcon style={{ color: 'orange',transform:'rotate(90deg)' }} />
+    }
+  }
+
+  console.log("INDICATOR ",indicators);
+
   return (
     <>
       <Grid style={{ marginTop: '40px' }}>
@@ -143,7 +175,7 @@ const RiskIndicators = props => {
             cellRender={actionLink}
           />
           <Column
-            dataField="riskTitle"
+            dataField="riskUniverseTitle"
             minWidth={100}
             caption="Risk Title"
             allowHeaderFiltering={true}
@@ -151,7 +183,7 @@ const RiskIndicators = props => {
             allowFiltering={false}
           />
           <Column
-            dataField="riskCategoryControlActualCategoryControlName"
+            dataField="riskCategoryName"
             minWidth={100}
             caption="Risk Category"
             allowHeaderFiltering={true}
@@ -189,6 +221,7 @@ const RiskIndicators = props => {
             allowHeaderFiltering={true}
             allowSearch={true}
             allowFiltering={false}
+            cellRender={checkIfPreviousGreat}
           />
           <Column
             dataField="currentStatus"
@@ -197,16 +230,18 @@ const RiskIndicators = props => {
             allowHeaderFiltering={true}
             allowSearch={true}
             allowFiltering={false}
+            cellRender={checkIfCurrentGreat}
           />
           <Column
-            dataField="riskDirection"
+            dataField="riskAppetiteDirection"
             minWidth={100}
             caption="Risk Direction"
             allowHeaderFiltering={true}
             allowSearch={true}
             allowFiltering={false}
+            cellRender={checkDirection}
           />
-          <Column
+          {/* <Column
             dataField="riskOwners"
             minWidth={100}
             caption="Risk Owner"
@@ -214,7 +249,7 @@ const RiskIndicators = props => {
             allowSearch={true}
             cellRender={actionRiskOwners}
             allowFiltering={false}
-          />
+          /> */}
           <Scrolling rowRenderingMode="virtual" />
           <Paging defaultPageSize={20} />
           <Pager

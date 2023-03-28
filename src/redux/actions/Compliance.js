@@ -3,6 +3,16 @@ import { fetchError, fetchStart, fetchSuccess } from './Common';
 import { API_URL, REQUEST_STATUS } from '../../@jumbo/utils/apis';
 import useAxios from '../../services/Requests/useAxios';
 
+
+
+const formatToastMessage = (err) =>{
+  let error = JSON.parse(err.response.data);
+  let convertedObject = Object.entries(error.errors);
+  let result = convertedObject?.map(item => item[1][0])
+
+  return result;
+}
+
 //------------------ Legal Compliance -----------------------//
 export const fetchLegalCompliance = () => {
   return async dispatch => {
@@ -18,13 +28,9 @@ export const fetchLegalCompliance = () => {
         }
       })
       .catch(err => {
-        // if (err.response.status !== undefined) {
-        //   if (err.response.status === REQUEST_STATUS.BAD_REQUEST) {
-        //     dispatch(fetchError(err.response.data.errors.Name[0]));
-        //   }
-        // } else {
-        //   dispatch(fetchError(err.message));
-        // }
+        if (err.response.status === 400) {
+          dispatch(fetchError(formatToastMessage(err)))
+        }
       });
   };
 };
@@ -46,13 +52,11 @@ export const addLegalCompliance = (data, callBackFunc) => {
         console.log(res);
       })
       .catch(err => {
-        if (err.response.status !== undefined) {
+        if (err.response.status === 400) {
           if (err.response.status === REQUEST_STATUS.BAD_REQUEST) {
-            dispatch(fetchError(err.response.data.errors?.Name[0]));
+            dispatch(fetchError(formatToastMessage(err)));
           }
-        } else {
-          dispatch(fetchError(err.message));
-        }
+        } 
       });
   };
 };
@@ -242,11 +246,8 @@ export const addEnterpriseCompliance = (data, callBackFunc) => {
         }
       })
       .catch(err => {
-        let error = JSON.parse(err.response.data);
-        let convertedObject = Object.entries(error.errors);
-        console.log('CONVERTED ', convertedObject);
         if (err.response.status === 400) {
-          dispatch(fetchError(convertedObject[0][1][0]));
+          dispatch(fetchError(formatToastMessage(err)));
         }
       });
   };
@@ -292,11 +293,8 @@ export const updateEnterpriseCompliance = (updatedData, callBackFunc) => {
         }
       })
       .catch(err => {
-        let error = JSON.parse(err.response.data);
-        let convertedObject = Object.entries(error.errors);
-        console.log('CONVERTED ', convertedObject);
         if (err.response.status === 400) {
-          dispatch(fetchError(convertedObject[0][1][0]));
+          dispatch(fetchError(formatToastMessage(err)));
         }
       });
   };
@@ -581,11 +579,8 @@ export const addStatutoryCompliance = (data, callBackFunc) => {
         }
       })
       .catch(err => {
-        let error = JSON.parse(err.response.data);
-        let convertedObject = Object.entries(error.errors);
-        console.log('CONVERTED ', convertedObject);
         if (err.response.status === 400) {
-          dispatch(fetchError(convertedObject[0][1][0]));
+          dispatch(fetchError(formatToastMessage(err)));
         }
       });
   };
@@ -631,11 +626,8 @@ export const updateStatutoryCompliance = (updatedData, callBackFunc) => {
         }
       })
       .catch(err => {
-        let error = JSON.parse(err.response.data);
-        let convertedObject = Object.entries(error.errors);
-        console.log('CONVERTED ', convertedObject);
         if (err.response.status === 400) {
-          dispatch(fetchError(convertedObject[0][1][0]));
+          dispatch(fetchError(formatToastMessage(err)));
         }
       });
   };
@@ -667,7 +659,25 @@ export const approveCompliance = data => {
   return async dispatch => {
     let axiosInstance = useAxios(dispatch);
     await axiosInstance
-      .post(`${API_URL.APPROVE_COMPLIANCE}`, data)
+      .post(`${API_URL.APPROVE_ENTERPRISE}`, data)
+      .then(res => {
+        if (res.data.success) {
+          dispatch(fetchSuccess('Compliance Approved Successfully!'));
+        } else {
+          dispatch(fetchError(res.data.message ?? 'An error occurred try again later!'));
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+export const approveStatutoryCompliance = data => {
+  return async dispatch => {
+    let axiosInstance = useAxios(dispatch);
+    await axiosInstance
+      .post(`${API_URL.APPROVE_STATUTORY}`, data)
       .then(res => {
         if (res.data.success) {
           dispatch(fetchSuccess('Compliance Approved Successfully!'));

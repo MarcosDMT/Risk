@@ -13,11 +13,19 @@ const ContentLoader = () => {
   const { error, loading, message } = useSelector(({ common }) => common);
   const dispatch = useDispatch();
 
+  const onClose = () => {
+    dispatch(fetchError(''));
+  }
+
   useEffect(() => {
     setTimeout(() => {
       dispatch(fetchError(''));
-    }, 3000);
-  }, [dispatch, error, message]);
+    }, 4000);
+
+    return () => {
+      clearTimeout(setTimeout);
+    }
+  }, [dispatch, message]);
 
   return (
     <React.Fragment>
@@ -27,8 +35,9 @@ const ContentLoader = () => {
           open={Boolean(error)}
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           TransitionComponent={SlideTransition}>
-          <Alert variant="filled" severity="error">
-            {error}
+          <Alert variant="filled" severity="error" onClose={onClose}>
+            {Array.isArray(error) ? error?.map((err) => <li>{err}</li>) : error}
+            {/* {error} */}
           </Alert>
         </Snackbar>
       }
