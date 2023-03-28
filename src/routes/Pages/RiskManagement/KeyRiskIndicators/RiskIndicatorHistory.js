@@ -60,8 +60,9 @@ const RiskIndicatorHistory = props => {
     );
   }
 
+
   const getRiskIndicatorHistory = async() =>{
-    await dispatch(fetchIndicatorHistory(location.state))
+    await dispatch(fetchIndicatorHistory(location?.state?.riskUniverseId))
   }
 
   useEffect(() =>{

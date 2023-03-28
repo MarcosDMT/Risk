@@ -46,7 +46,7 @@ const KRITable = props => {
 
   const onMenuClick = (menu, data) => {
     if (menu.action === 'view') {
-      history.push({ pathname: '/risk-indicators/history', state: data });
+      history.push({ pathname: `/risk-indicators/history`, state: data });
     }
   };
 

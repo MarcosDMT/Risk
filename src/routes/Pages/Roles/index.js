@@ -129,6 +129,7 @@ const Roles = () => {
   const handleOnSave = e => {
     e.preventDefault();
     if (selectedRole.id === undefined || selectedRole.id === '') {
+      console.log("SELECTED ROLE ",selectedRole)
       dispatch(addRole(selectedRole, () => setIsEditable(false)));
     } else {
       dispatch(updateRole(selectedRole, () => setIsEditable(false)));

@@ -31,7 +31,7 @@ export const fetchIndicatorHistory = (data) => {
   return async dispatch => {
     let axiosInstance = useAxios(dispatch);
     await axiosInstance
-      .post(`${API_URL.INDICATOR_HISTORY}`, data)
+      .post(`${API_URL.INDICATOR_HISTORY}`,{id: data})
       .then(res => {
         if (res.status === REQUEST_STATUS.STATUS_OK) {
           dispatch({

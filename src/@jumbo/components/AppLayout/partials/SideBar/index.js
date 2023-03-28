@@ -7,7 +7,7 @@ import CmtVertical from '../../../../../@coremat/CmtNavigation/Vertical';
 import { sidebarNavs } from '../menus';
 import { Box, InputAdornment, MenuItem, Select, Typography } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-// import { fetchSubsidiaries, setCurrentSubsidiary } from '../../../../../redux/actions/Subsidiaries';
+import { fetchSubsidiaries, setCurrentSubsidiary } from '../../../../../redux/actions/Subsidiaries';
 import { alpha } from '@material-ui/core/styles';
 import { COLORS } from '../../../../../routes/Pages/Dashboard/dummyData';
 import RoleBasedGuard from '../../../../hocs/RoleAuth';
@@ -52,12 +52,12 @@ const SideBar = () => {
   const dispatch = useDispatch();
   const { subsidiaries, currentSubsidiary } = useSelector(({ subsidiaries }) => subsidiaries);
 
-  // const handleFilterChange = e => {
-  //   dispatch(setCurrentSubsidiary(e.target.value));
-  // };
+  const handleFilterChange = e => {
+    dispatch(setCurrentSubsidiary(e.target.value));
+  };
   return (
     <>
-      {/* <RoleBasedGuard permission={PERMISSIONS.SUBSIDIARY.DELETE}>
+      <RoleBasedGuard permission={PERMISSIONS.SUBSIDIARY.DELETE}>
         <Box width={'100%'} mb={2} p={3} className={classes.companyPanel}>
           <Typography style={{ marginLeft: '10px' }} gutterBottom variant={'caption'} component={'label'}>
             Current Company
@@ -108,7 +108,7 @@ const SideBar = () => {
               ))}
           </Select>
         </Box>
-      </RoleBasedGuard> */}
+      </RoleBasedGuard>
 
       <PerfectScrollbar className={classes.perfectScrollbarSidebar}>
         <CmtVertical menuItems={sidebarNavs} style={{ marginBottom: 10 }} />

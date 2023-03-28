@@ -108,3 +108,12 @@ export const deleteSubsidiary = data => {
       });
   };
 };
+
+export const setCurrentSubsidiary = data => {
+  return dispatch => {
+    dispatch({
+      type: SUBSIDIARIES.SET_CURRENT,
+      payload: data,
+    });
+  };
+};
