@@ -162,9 +162,7 @@ const AddEditStatutoryCompliance = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
-  const {
-    selectedStatutory,
-  } = useSelector(({ compliance }) => compliance);
+  const { selectedStatutory } = useSelector(({ compliance }) => compliance);
   const handleNext = () => {
     setActiveStep(activeStep + 1);
   };
@@ -173,14 +171,14 @@ const AddEditStatutoryCompliance = () => {
     setIsUpdate(false);
     setActiveStep(0);
   };
-  const handleOnSave = async(e) => {
+  const handleOnSave = async e => {
     e.preventDefault();
     let data = { ...complianceDetails, penalty: parseFloat(complianceDetails.penalty) };
     if (isUpdate) {
       dispatch(updateStatutoryCompliance(data, () => handleNext()));
     } else {
       await dispatch(addStatutoryCompliance(data, () => handleNext()));
-      await dispatch(fetchStatutoryComplianceSub({id: selectedStatutory}));
+      await dispatch(fetchStatutoryComplianceSub({ id: selectedStatutory }));
     }
   };
   const handlePrev = () => {
@@ -193,7 +191,7 @@ const AddEditStatutoryCompliance = () => {
         { label: HEADER.STATUTORY_COMPLIANCE.name, link: `/compliance/${HEADER.STATUTORY_COMPLIANCE.url}` },
         { label: HEADER.UPDATE_STATUTORY_COMPLIANCE, isActive: true },
       ]);
-      setComplianceDetails({...location.state, isSubCompliance: location.state?.subId ? true : false});
+      setComplianceDetails({ ...location.state, isSubCompliance: location.state?.subId ? true : false });
       setIsUpdate(true);
     } else {
       setBreadcrumbs([
@@ -318,9 +316,9 @@ export const ComplianceContent = props => {
   // const [attachment, setAttachment] = useState(false);
   const { statutoryComplianceData } = useSelector(({ compliance }) => compliance);
 
-
-  const hasSubComplianceData = statutoryComplianceData?.filter((datum) => datum.id !== complianceDetails?.id && datum.hasSubCompliance === true);
-
+  const hasSubComplianceData = statutoryComplianceData?.filter(
+    datum => datum.id !== complianceDetails?.id && datum.hasSubCompliance === true,
+  );
 
   // const hasSubComplianceData = statutoryComplianceData.filter((datum) => datum.hasSubCompliance === true);
 
@@ -540,8 +538,8 @@ export const ComplianceContent = props => {
     setComplianceDetails({ ...complianceDetails, organization: [...complianceDetails.organization, initialOrganization] });
   };
 
-    // get value of selected frequency to display in preview
-    const selectedFrequency = getAutoCompleteValue(complianceFrequencies, complianceDetails.frequencyId);
+  // get value of selected frequency to display in preview
+  const selectedFrequency = getAutoCompleteValue(complianceFrequencies, complianceDetails.frequencyId);
 
   return (
     <>
@@ -594,7 +592,7 @@ export const ComplianceContent = props => {
                     />
                   </Grid>
                   <Grid item md={12} xs={12}>
-                  <TextField
+                    <TextField
                       required
                       onChange={handleAttachment}
                       label="Source Document"
@@ -700,7 +698,18 @@ export const ComplianceContent = props => {
                       getOptionLabel={option => option.name ?? option.firstName + ' ' + option.lastName}
                       onChange={handleOnPrimaryOwnerChange}
                       renderOption={(option, { selected }) => (
-                        <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
+                        <ListItem key={option.id} disablePadding>
+                          <ListItemText
+                            id={`checkbox-list-label-${option.id}`}
+                            primary={option.firstName + ' ' + option.lastName}
+                            secondary={
+                              <Typography variant={'caption'}>
+                                {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        // <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
                       )}
                       renderInput={params => (
                         <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Primary Owner" />
@@ -715,7 +724,18 @@ export const ComplianceContent = props => {
                       getOptionLabel={option => option.name ?? option.firstName + ' ' + option.lastName}
                       onChange={handleOnSecondaryOwnerChange}
                       renderOption={(option, { selected }) => (
-                        <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
+                        <ListItem key={option.id} disablePadding>
+                          <ListItemText
+                            id={`checkbox-list-label-${option.id}`}
+                            primary={option.firstName + ' ' + option.lastName}
+                            secondary={
+                              <Typography variant={'caption'}>
+                                {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        // <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
                       )}
                       renderInput={params => (
                         <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Secondary Owner" />
@@ -730,7 +750,18 @@ export const ComplianceContent = props => {
                       getOptionLabel={option => option.name ?? option.firstName + ' ' + option.lastName}
                       onChange={handleOnEscalationOwnerChange}
                       renderOption={(option, { selected }) => (
-                        <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
+                        <ListItem key={option.id} disablePadding>
+                          <ListItemText
+                            id={`checkbox-list-label-${option.id}`}
+                            primary={option.firstName + ' ' + option.lastName}
+                            secondary={
+                              <Typography variant={'caption'}>
+                                {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        // <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
                       )}
                       renderInput={params => (
                         <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Escalation Owner" />
@@ -868,7 +899,7 @@ export const ComplianceContent = props => {
                     />
                   </Grid>
                   <Grid item md={12} xs={12}>
-                  <Autocomplete
+                    <Autocomplete
                       fullWidth
                       options={complianceFrequencies}
                       onChange={handleFrequency}
@@ -914,7 +945,7 @@ export const ComplianceContent = props => {
             )}
             {activeStep === 3 && (
               <Box width={'100%'}>
-                <Preview {...{ complianceDetails,selectedFrequency }} />
+                <Preview {...{ complianceDetails, selectedFrequency }} />
               </Box>
             )}
           </Box>
@@ -942,7 +973,7 @@ export const ComplianceContent = props => {
   );
 };
 export const Preview = props => {
-  const { complianceDetails, isView,selectedFrequency } = props;
+  const { complianceDetails, isView, selectedFrequency } = props;
   const renderHTML = rawHTML => React.createElement('div', { dangerouslySetInnerHTML: { __html: rawHTML } });
   const classes = useStyles();
   return (

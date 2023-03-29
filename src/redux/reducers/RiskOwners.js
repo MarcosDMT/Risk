@@ -2,6 +2,7 @@ import { RISK_OWNERS } from '../../@jumbo/constants/ActionTypes';
 
 const INIT_STATE = {
   riskOwners: [],
+  riskOwnersOptions:[],
   riskOwnerTypes: [],
 };
 export default (state = INIT_STATE, action) => {

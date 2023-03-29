@@ -683,7 +683,18 @@ export const ComplianceContent = props => {
                       getOptionLabel={option => option.name ?? option.firstName + ' ' + option.lastName}
                       onChange={handleOnPrimaryOwnerChange}
                       renderOption={(option, { selected }) => (
-                        <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
+                        <ListItem key={option.id} disablePadding>
+                          <ListItemText
+                            id={`checkbox-list-label-${option.id}`}
+                            primary={option.firstName + ' ' + option.lastName}
+                            secondary={
+                              <Typography variant={'caption'}>
+                                {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        // <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
                       )}
                       renderInput={params => (
                         <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Primary Owner" />
@@ -698,7 +709,18 @@ export const ComplianceContent = props => {
                       getOptionLabel={option => option.name ?? option.firstName + ' ' + option.lastName}
                       onChange={handleOnSecondaryOwnerChange}
                       renderOption={(option, { selected }) => (
-                        <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
+                        <ListItem key={option.id} disablePadding>
+                          <ListItemText
+                            id={`checkbox-list-label-${option.id}`}
+                            primary={option.firstName + ' ' + option.lastName}
+                            secondary={
+                              <Typography variant={'caption'}>
+                                {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        // <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
                       )}
                       renderInput={params => (
                         <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Secondary Owner" />
@@ -713,7 +735,18 @@ export const ComplianceContent = props => {
                       getOptionLabel={option => option.name ?? option.firstName + ' ' + option.lastName}
                       onChange={handleOnEscalationOwnerChange}
                       renderOption={(option, { selected }) => (
-                        <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
+                        <ListItem key={option.id} disablePadding>
+                          <ListItemText
+                            id={`checkbox-list-label-${option.id}`}
+                            primary={option.firstName + ' ' + option.lastName}
+                            secondary={
+                              <Typography variant={'caption'}>
+                                {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        // <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
                       )}
                       renderInput={params => (
                         <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Escalation Owner" />

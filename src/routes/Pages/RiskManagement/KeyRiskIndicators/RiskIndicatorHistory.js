@@ -14,7 +14,7 @@ import {
   Toolbar,
 } from 'devextreme-react/data-grid';
 import { Link,useHistory,useLocation } from 'react-router-dom';
-import { Button } from '@material-ui/core';
+import { Button,Typography } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import { FileUpload } from '@mui/icons-material';
 import { DataGrid } from 'devextreme-react';
@@ -25,6 +25,11 @@ import { PERMISSIONS } from '../../../../@jumbo/constants/RolesConstants';
 import { MoreHoriz, Visibility } from '@material-ui/icons';
 import CmtDropdownMenu from '../../../../@coremat/CmtDropdownMenu';
 import { fetchIndicatorHistory } from '../../../../redux/actions/RiskIndicator';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import HeightIcon from '@mui/icons-material/Height';
+import { Chip } from '@mui/material';
+
 
 
 const getActions = permissions => {
@@ -50,24 +55,72 @@ const RiskIndicatorHistory = props => {
     // }
   };
 
-  function actionLink({ data, rowIndex }) {
-    return (
-      <CmtDropdownMenu
-        items={userActions(data)}
-        onItemClick={menu => onMenuClick(menu, data)}
-        TriggerComponent={<MoreHoriz />}
-      />      
-    );
-  }
+  // function actionLink({ data, rowIndex }) {
+  //   return (
+  //     <CmtDropdownMenu
+  //       items={userActions(data)}
+  //       onItemClick={menu => onMenuClick(menu, data)}
+  //       TriggerComponent={<MoreHoriz />}
+  //     />      
+  //   );
+  // }
 
 
   const getRiskIndicatorHistory = async() =>{
     await dispatch(fetchIndicatorHistory(location?.state?.riskUniverseId))
   }
 
+  console.log("LOCATION ",location.state)
+
   useEffect(() =>{
     getRiskIndicatorHistory();
   },[])
+
+  const checkIfCurrentGreat = ({displayValue,data}) =>{
+    if(data?.currentStatus > data?.riskAppetiteAmount){
+      return <Chip variant="outlined" color="error" label={displayValue} />
+    }else{
+      return <Chip variant="outlined" color="success" label={displayValue} />
+    }
+  }
+
+  const checkIfPreviousGreat = ({displayValue,data}) =>{
+    if(data?.previousStatus > data?.riskAppetiteAmount){
+      return <Chip variant="outlined" color="error" label={displayValue} />
+    }else{
+      return <Chip variant="outlined" color="success" label={displayValue} />
+    }
+  }
+
+  const checkDirection = ({data}) =>{
+    if(data?.riskAppetiteDirection === 'Negative'){
+      return <ArrowDownwardIcon style={{ color: 'red' }} />;
+    }else if(data?.riskAppetiteDirection === 'Positive'){
+      return <ArrowUpwardIcon style={{ color: 'green' }} />;
+    }else if(data?.riskAppetiteDirection === 'Stable'){
+       return <HeightIcon style={{ color: 'orange',transform:'rotate(90deg)' }} />
+    }
+  }
+
+  const incidentTitle = ({ displayValue }) => {
+    if (!Array.isArray(displayValue)) {
+      return null;
+    }
+    return displayValue?.map((value, index) => <li key={index}>{value?.incidentTitle}</li>);
+  };
+
+  const incidentDesc = ({ displayValue }) => {
+    if (!Array.isArray(displayValue)) {
+      return null;
+    }
+    return displayValue?.map((value, index) => <li key={index}>{value?.incidentDesc}</li>);
+  };
+
+  const convertDate = ({ displayValue, data }) => {
+    let formattedDate = data.incidentDate;
+    displayValue = new Date(formattedDate).toLocaleDateString();
+    return <Typography>{displayValue}</Typography>;
+  };
 
   return (
     <>
@@ -89,13 +142,31 @@ const RiskIndicatorHistory = props => {
         <HeaderFilter visible={true} allowSearch={true} />
         {/* <Column dataField="id" caption="Risk ID" key="id" visible={true} /> */}
         <Column
-          fixed={true}
+          dataField="incidentInfo"
           fixedPosition="left"
-          caption="Action"
-          width={120}
+          caption="Incident Title"
+          width={240}
           alignment={'center'}
           allowFiltering={false}
-          cellRender={actionLink}
+          cellRender={incidentTitle}
+        />
+        <Column
+          dataField="incidentInfo"
+          fixedPosition="left"
+          caption="Incident Description"
+          width={240}
+          alignment={'center'}
+          allowFiltering={false}
+          cellRender={incidentDesc}
+        />
+        <Column
+          dataField="incidentDate"
+          minWidth={100}
+          caption="Incident Date"
+          allowHeaderFiltering={true}
+          allowSearch={true}
+          allowFiltering={false}
+          cellRender={convertDate}
         />
         <Column
           dataField="riskUniverseTitle"
@@ -140,26 +211,22 @@ const RiskIndicatorHistory = props => {
         <Column
           dataField="riskAppetiteAmount"
           minWidth={100}
+          alignment={'left'}
           caption="Risk Appetite"
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
         />
-        <Column
-          dataField="riskAppetiteDirection"
-          minWidth={100}
-          caption="Risk Appetite Direction"
-          allowHeaderFiltering={true}
-          allowSearch={true}
-          allowFiltering={false}
-        />
+        
         <Column
           dataField="previousStatus"
           minWidth={100}
+          alignment={'center'}
           caption="Previous Status"
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
+          cellRender={checkIfPreviousGreat}
         />
         <Column
           dataField="currentStatus"
@@ -168,6 +235,16 @@ const RiskIndicatorHistory = props => {
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
+          cellRender={checkIfCurrentGreat}
+        />
+        <Column
+          dataField="riskAppetiteDirection"
+          minWidth={100}
+          caption="Risk Direction"
+          allowHeaderFiltering={true}
+          allowSearch={true}
+          allowFiltering={false}
+          cellRender={checkDirection}
         />
         <Scrolling rowRenderingMode="virtual" />
         <Paging defaultPageSize={20} />

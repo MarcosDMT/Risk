@@ -78,7 +78,7 @@ const KRITable = props => {
   }
 
   const checkIfPreviousGreat = ({displayValue,data}) =>{
-    if(data?.currentStatus > data?.riskAppetiteAmount){
+    if(data?.previousStatus > data?.riskAppetiteAmount){
       return <Chip variant="outlined" color="error" label={displayValue} />
     }else{
       return <Chip variant="outlined" color="success" label={displayValue} />

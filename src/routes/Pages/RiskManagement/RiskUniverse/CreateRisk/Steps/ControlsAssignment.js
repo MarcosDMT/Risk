@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Checkbox, Grid, TextField } from '@material-ui/core';
-import { Chip } from '@mui/material';
+import { Chip, Typography } from '@mui/material';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { getAutoCompleteValue } from '../../../../../../@jumbo/utils/commonHelper';
 import { AddCircle } from '@material-ui/icons';
@@ -9,7 +9,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import GridContainer from '../../../../../../@jumbo/components/GridContainer';
 import { fetchError } from '../../../../../../redux/actions';
 import { CheckBoxOutlineBlank, CheckBoxOutlined } from '@mui/icons-material';
-import validator from 'validator';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBoxOutlined fontSize="small" />;
@@ -32,9 +35,6 @@ const ControlsAssignment = props => {
   const { riskOwners } = useSelector(({ riskOwners }) => riskOwners);
   const filter = createFilterOptions();
   const [riskEmails, setRiskEmails] = useState([]);
-
-
-
 
   const handleRiskEmailsChange = (e, values) => {
     let data = riskDetails?.additionalControlActions;
@@ -169,9 +169,9 @@ const ControlsAssignment = props => {
     additionalControlActions[index].complianceDetails.organization = [...data];
     setRiskDetails({
       ...riskDetails,
-        ...riskDetails,
+      ...riskDetails,
       additionalControlActions: [...additionalControlActions],
-        // organization: [...data],
+      // organization: [...data],
     });
   };
   const handleActionOwnerChange = (e, values) => {
@@ -213,7 +213,7 @@ const ControlsAssignment = props => {
     }
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = email => {
     const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     return regex.test(email);
   };
@@ -241,16 +241,43 @@ const ControlsAssignment = props => {
             disableCloseOnSelect
             getOptionLabel={option => option.name}
             renderOption={(option, state) => (
-              <span key={option.name}>
-                <Checkbox
-                  color={'primary'}
-                  icon={icon}
-                  checkedIcon={checkedIcon}
-                  style={{ marginRight: 8 }}
-                  checked={state.selected}
+              <ListItem
+                key={option.id}
+                // secondaryAction={
+                //   <Chip label={owner.riskOwnerTypeOwnerType}/>
+                // }
+                disablePadding>
+                <ListItemIcon>
+                  <Checkbox
+                    edge="start"
+                    checked={state.selected}
+                    checkedIcon={checkedIcon}
+                    //onChange= {e => handleOnCheck(e, owner)}
+                    disableRipple
+                    inputProps={{ 'aria-labelledby': `checkbox-list-label-${option.id}` }}
+                  />
+                </ListItemIcon>
+
+                <ListItemText
+                  id={`checkbox-list-label-${option.id}`}
+                  primary={option.name}
+                  secondary={
+                    <Typography variant={'caption'}>
+                      {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                    </Typography>
+                  }
                 />
-                {option.name}
-              </span>
+              </ListItem>
+              // <span key={option.name}>
+              //   <Checkbox
+              //     color={'primary'}
+              //     icon={icon}
+              //     checkedIcon={checkedIcon}
+              //     style={{ marginRight: 8 }}
+              //     checked={state.selected}
+              //   />
+              //   {option.name}
+              // </span>
             )}
             renderInput={params => <TextField fullWidth variant={'outlined'} {...params} label="Action Owner" />}
           />
@@ -273,11 +300,13 @@ const ControlsAssignment = props => {
             renderTags={(tagValue, getTagProps) =>
               tagValue.map((option, index) => (
                 <Chip
-                 title={option} 
-                //  style={{ backgroundColor: `${!validateEmail(option) ? 'red' : '#'}`, color: "white" }}
-                 color={`${!validateEmail(option) ? 'error' : 'primary'}`}
-                //  variant={`${!validateEmail(option) ? 'outlined' : 'contained'}`}
-                  label={option} {...getTagProps({ index })} />
+                  title={option}
+                  //  style={{ backgroundColor: `${!validateEmail(option) ? 'red' : '#'}`, color: "white" }}
+                  color={`${!validateEmail(option) ? 'error' : 'primary'}`}
+                  //  variant={`${!validateEmail(option) ? 'outlined' : 'contained'}`}
+                  label={option}
+                  {...getTagProps({ index })}
+                />
               ))
             }
             freeSolo
@@ -296,8 +325,7 @@ const ControlsAssignment = props => {
                 {option}
               </span>
             )}
-            renderInput={params => <TextField
-               fullWidth variant={'outlined'} {...params} type="email" label="Email" />}
+            renderInput={params => <TextField fullWidth variant={'outlined'} {...params} type="email" label="Email" />}
           />
         </Grid>
         <Grid item md={12} xs={12}>
@@ -361,7 +389,36 @@ const ControlsAssignment = props => {
             )}
             getOptionLabel={option => option.name ?? option.firstName + ' ' + option.lastName}
             onChange={handlePrimaryOwnerChange}
-            renderOption={(option, { selected }) => <span key={option.id}>{option.firstName + '' + option.lastName}</span>}
+            renderOption={(option, { selected }) => (
+              <ListItem
+                key={option.id}
+                // secondaryAction={
+                //   <Chip label={owner.riskOwnerTypeOwnerType}/>
+                // }
+                disablePadding>
+                <ListItemText
+                  id={`checkbox-list-label-${option.id}`}
+                  primary={option.firstName + ' ' + option.lastName}
+                  secondary={
+                    <Typography variant={'caption'}>
+                      {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+              // <>
+              //   <span key={option.id}>{option.firstName + ' ' + option.lastName}</span>
+              //   <ListItemText
+              //     // id={`checkbox-list-label-${option.id}`}
+              //     primary={option.name}
+              //     secondary={
+              //       <Typography variant={'caption'}>
+              //         {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+              //       </Typography>
+              //     }
+              //   />
+              // </>
+            )}
             renderInput={params => (
               <TextField required fullWidth {...params} size={'small'} variant={'outlined'} label="Primary Owner" />
             )}
@@ -390,7 +447,22 @@ const ControlsAssignment = props => {
             )}
             getOptionLabel={option => option.name ?? option.firstName + ' ' + option.lastName}
             onChange={handleSecondaryOwnerChange}
-            renderOption={(option, { selected }) => <span key={option.id}>{option.firstName + '' + option.lastName}</span>}
+            renderOption={(option, { selected }) => (
+              <ListItem
+                key={option.id}
+                disablePadding>
+                <ListItemText
+                  id={`checkbox-list-label-${option.id}`}
+                  primary={option.firstName + ' ' + option.lastName}
+                  secondary={
+                    <Typography variant={'caption'}>
+                      {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+              // <span key={option.id}>{option.firstName + '' + option.lastName}</span>
+            )}
             renderInput={params => (
               <TextField required fullWidth {...params} size={'small'} variant={'outlined'} label="Secondary Owner" />
             )}
@@ -406,7 +478,22 @@ const ControlsAssignment = props => {
             )}
             getOptionLabel={option => option.name ?? option.firstName + ' ' + option.lastName}
             onChange={handleEscalationOwnerChange}
-            renderOption={(option, { selected }) => <span key={option.id}>{option.firstName + '' + option.lastName}</span>}
+            renderOption={(option, { selected }) => (
+              <ListItem
+                key={option.id}
+                disablePadding>
+                <ListItemText
+                  id={`checkbox-list-label-${option.id}`}
+                  primary={option.firstName + ' ' + option.lastName}
+                  secondary={
+                    <Typography variant={'caption'}>
+                      {option?.organization?.map((org, index) => org.departmentName + ' | ')}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+              // <span key={option.id}>{option.firstName + '' + option.lastName}</span>
+            )}
             renderInput={params => (
               <TextField required fullWidth {...params} size={'small'} variant={'outlined'} label="Escalation Owner" />
             )}
