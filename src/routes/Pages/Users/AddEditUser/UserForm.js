@@ -504,6 +504,8 @@ const UserForm = props => {
         sectionName: '',
         subSectionId: null,
         subSectionName: '',
+        headId: null,
+        headName: '',
       };
     } else {
       data[index] = {
@@ -513,6 +515,8 @@ const UserForm = props => {
         sectionName: '',
         subSectionId: null,
         subSectionName: '',
+        headId: null,
+        headName: '',
       };
     }
     setUserDetails({ ...userDetails, organization: [...data] });
@@ -526,6 +530,8 @@ const UserForm = props => {
         sectionName: value.name,
         subSectionId: null,
         subSectionName: '',
+        headId: null,
+        headName: '',
       };
     } else {
       data[index] = {
@@ -534,10 +540,13 @@ const UserForm = props => {
         sectionName: '',
         subSectionId: null,
         subSectionName: '',
+        headId: null,
+        headName: '',
       };
     }
     setUserDetails({ ...userDetails, organization: [...data] });
   };
+
   const handleOnSubSectionChange = index => (event, value) => {
     const data = [...organization];
     if (value !== null) {
@@ -545,12 +554,35 @@ const UserForm = props => {
         ...data[index],
         subSectionId: value.id,
         subSectionName: value.name,
+        headId: null,
+        headName: '',
       };
     } else {
       data[index] = {
         ...data[index],
         subSectionId: null,
         subSectionName: '',
+        headId: null,
+        headName: '',
+      };
+    }
+    setUserDetails({ ...userDetails, organization: [...data] });
+  };
+
+  const handleOnHeadChange = index => (event, value) => {
+    console.log('VALUE ', value);
+    const data = [...organization];
+    if (value !== null) {
+      data[index] = {
+        ...data[index],
+        headId: value.headId,
+        headName: value.headName,
+      };
+    } else {
+      data[index] = {
+        ...data[index],
+        headId: null,
+        headName: '',
       };
     }
     setUserDetails({ ...userDetails, organization: [...data] });
@@ -792,6 +824,7 @@ const UserForm = props => {
                             handleOnDepartmentChange,
                             handleOnSectionChange,
                             handleOnSubSectionChange,
+                            handleOnHeadChange,
                             index,
                             handleRemoveDept,
                           }}
@@ -1028,13 +1061,20 @@ const AddDepartmentForm = props => {
     handleOnDepartmentChange,
     handleOnSectionChange,
     handleOnSubSectionChange,
+    handleOnHeadChange,
     handleRemoveDept,
   } = props;
+
+  const deptHeads = [
+    { headName: 'Department', headId: 1 },
+    { headName: 'Section', headId: 2 },
+    { headName: 'SubSection', headId: 3 },
+  ];
 
   return (
     <>
       <GridContainer>
-        <Grid item md={4} xs={12}>
+        <Grid item md={3} xs={12}>
           <Autocomplete
             fullWidth
             id={`department_${index}`}
@@ -1076,7 +1116,7 @@ const AddDepartmentForm = props => {
             )}
           />
         </Grid>
-        <Grid item md={4} xs={12}>
+        <Grid item md={3} xs={12}>
           <Autocomplete
             fullWidth
             options={getFilteredOptions(subSections, organization, 'sectionId', 'sectionsId')}
@@ -1086,6 +1126,20 @@ const AddDepartmentForm = props => {
             renderOption={(option, { selected }) => <span key={option.id}>{option.name}</span>}
             renderInput={params => (
               <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Sub-Section" />
+            )}
+          />
+        </Grid>
+        <Grid item md={2} xs={12}>
+          <Autocomplete
+            fullWidth
+            // options={getFilteredOptions(deptHeads, organization, 'headId', 'headId')}
+            options={deptHeads}
+            value={getAutoCompleteValue(deptHeads, organization.headId, 'headId')}
+            getOptionLabel={option => option.headName}
+            onChange={handleOnHeadChange(index)}
+            renderOption={(option, { selected }) => <span key={option.headId}>{option.headName}</span>}
+            renderInput={params => (
+              <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Select Head" />
             )}
           />
         </Grid>

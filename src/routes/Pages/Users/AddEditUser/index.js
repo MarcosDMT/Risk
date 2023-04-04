@@ -44,6 +44,8 @@ const AddEditUser = () => {
         sectionName: '',
         subSectionId: null,
         subSectionName: '',
+        headId: null,
+        headName: '',
       },
     ],
     confirmPassword: '12345678',

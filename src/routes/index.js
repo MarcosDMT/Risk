@@ -33,6 +33,7 @@ import ComplianceDashboard from './Pages/Dashboard/DashboardReports/Compliance';
 import RiskIndicators from './Pages/Dashboard/DashboardReports/Risk/RiskIndicators';
 import EnterpriseHistory from './Pages/ComplianceModule/EnterpriseCompliance/EnterpriseHistory';
 import RiskIndicatorHistory from './Pages/RiskManagement/KeyRiskIndicators/RiskIndicatorHistory';
+import Settings from '../@jumbo/components/AppLayout/partials/SideBar/Settings';
 
 const RestrictedRoute = ({ component: Component, permission, ...rest }) => {
   const { authUser } = useSelector(({ auth }) => auth);
@@ -96,6 +97,7 @@ const Routes = () => {
           component={RiskUniverse}
           permission={PERMISSIONS.RISK_UNIVERSE.ACCESS}
         />
+        <RestrictedRoute path="/settings" exact component={Settings} permission={PERMISSIONS.USER.VIEW} />
         <RestrictedRoute
           path="/enterprise-compliance/history"
           exact

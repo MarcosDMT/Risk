@@ -30,7 +30,6 @@ export const getAccountStatus = status => {
   return response;
 };
 
-
 export const getComplianceStatus = status => {
   let response = {
     label: 'Not Complied',
@@ -39,13 +38,13 @@ export const getComplianceStatus = status => {
   if (status === 0) {
     response.label = 'Not Complied';
     response.color = 'red';
-  }else if (status === 2) {
+  } else if (status === 2) {
     response.label = 'Comply Now';
     response.color = 'orange';
-  }else if (status === 1) {
+  } else if (status === 1) {
     response.label = 'Complied';
     response.color = 'green';
-  }else if (status === 3) {
+  } else if (status === 3) {
     response.label = 'Waivered';
     response.color = 'green';
   }
@@ -114,12 +113,16 @@ export const isValidEmail = value => {
   return value && /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,8}$/i.test(value);
 };
 
-export const getAutoCompleteValue = (options, value, intVal = { id: '', name: '' }) => {
-  return Array.isArray(options) ? options.find(option => option.id === value) ?? null : null;
+// export const getAutoCompleteValue = (options, value, intVal = { id: '', name: '' }) => {
+//   return Array.isArray(options) ? options.find(option => option.id === value) ?? null : null;
+// };
+
+export const getAutoCompleteValue = (options, value, filterField = 'id') => {
+  return Array.isArray(options) ? options.find(option => option[filterField] === value) ?? null : null;
 };
 
 export const getFilteredOptions = (options, object, filterField, objectField = filterField) => {
-  if(object){
+  if (object) {
     return Array.isArray(options) ? options.filter(option => option[objectField] === object[filterField]) : [];
   }
   return [];

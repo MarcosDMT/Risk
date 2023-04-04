@@ -10,6 +10,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import PersonIcon from '@material-ui/icons/Person';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SidebarThemeContext from '../../../../@coremat/CmtLayouts/SidebarThemeContext/SidebarThemeContext';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -103,9 +104,11 @@ const SidebarHeader = () => {
                 <PersonIcon />
                 <div className="ml-2">Profile</div>
               </MenuItem>
-              <MenuItem onClick={handlePopoverClose}>
+              <MenuItem>
                 <SettingsIcon />
-                <div className="ml-2">Settings</div>
+                <Link to="/settings" className="ml-2">
+                  Settings
+                </Link>
               </MenuItem>
               <MenuItem onClick={onLogoutClick}>
                 <ExitToAppIcon />
