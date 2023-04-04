@@ -37,6 +37,41 @@ import { fetchRoles } from '../../../../redux/actions/Roles';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchError } from '../../../../redux/actions';
 import { addUser, updateUser } from '../../../../redux/actions/Users';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { addRiskOwner, fetchRiskOwnerTypes, updateRiskOwner } from '../../../../redux/actions/RiskOwners';
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}>
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
 
 const ColorlibConnector = withStyles({
   alternativeLabel: {
@@ -121,6 +156,56 @@ ColorlibStepIcon.propTypes = {
 function getSteps() {
   return ['Personal Details', 'Work Details', 'Preview'];
 }
+
+const ExternalPreview = props => {
+  const { externalDetails } = props;
+  const classes = useStyles();
+  return (
+    <TableContainer className={classes.inBuildAppCard}>
+      <Table size="small" aria-label="a dense table">
+        <TableHead className={classes.tableHeader}>
+          <TableRow>
+            <TableCell className={classes.tableHeaderCell}>Field Name</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Input Value</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>
+              <b>Name</b>
+            </TableCell>
+            <TableCell>{externalDetails.name !== '' ? externalDetails.name : 'Not Set'}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <b>Email Address</b>
+            </TableCell>
+            <TableCell>{externalDetails.email !== '' ? externalDetails.email : 'Not Set'}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <b>Phone Number</b>
+            </TableCell>
+            <TableCell>{externalDetails.phoneNumber !== '' ? externalDetails.phoneNumber : 'Not Set'}</TableCell>
+          </TableRow>
+
+          <TableRow>
+            <TableCell>
+              <b>Subsidiary</b>
+            </TableCell>
+            <TableCell>{externalDetails.companyName !== '' ? externalDetails.companyName : 'Not Set'}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <b>Risk Owner Type</b>
+            </TableCell>
+            <TableCell>{externalDetails.riskOwnerTypeName !== '' ? externalDetails.riskOwnerTypeName : 'Not Set'}</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 
 const Preview = props => {
   const { userDetails } = props;
@@ -244,6 +329,8 @@ const UserForm = props => {
     isValid,
     isUpdate,
     initialState,
+    externalDetails,
+    setExternalDetails,
     userDetails,
     setUserDetails,
     departments,
@@ -255,6 +342,11 @@ const UserForm = props => {
   } = props;
   const classes = useStyles();
   const { currentSubsidiary } = useSelector(({ subsidiaries }) => subsidiaries);
+  const { riskOwnerTypes } = useSelector(({ riskOwners }) => riskOwners);
+
+  // filter out internal types
+  const filteredTypes = riskOwnerTypes?.filter(type => type.ownerType !== 'Internal');
+
   const initialOrganization = {
     departmentId: null,
     departmentName: '',
@@ -264,12 +356,23 @@ const UserForm = props => {
     subSectionName: '',
   };
   const [activeStep, setActiveStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false);
   const steps = getSteps();
   const { organization } = userDetails;
   const dispatch = useDispatch();
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
+
+  const handleExternalNext = () => {
+    setCurrentStep(prevActiveStep => prevActiveStep + 1);
   };
   const handleRemoveDept = index => {
     const data = [...organization];
@@ -287,6 +390,10 @@ const UserForm = props => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
+  const handleExternalBack = () => {
+    setCurrentStep(prevActiveStep => prevActiveStep - 1);
+  };
+
   const handleReset = () => {
     setActiveStep(0);
     setUserDetails(initialState);
@@ -300,6 +407,16 @@ const UserForm = props => {
     }
     //handleNext();
   };
+
+  const handleSubmitExternal = () => {
+    if (isUpdate) {
+      dispatch(updateRiskOwner(externalDetails, () => handleNext()));
+    } else {
+      dispatch(addRiskOwner(externalDetails, () => handleNext()));
+    }
+    //handleNext();
+  };
+
   const handleOnSubsidiaryChange = (event, value) => {
     if (value !== null) {
       setUserDetails({
@@ -321,6 +438,53 @@ const UserForm = props => {
         organization: [initialOrganization],
       });
       dispatch(fetchRoles('All'));
+    }
+  };
+
+  const handleOnExternalSubsidiaryChange = (event, value) => {
+    if (value !== null) {
+      setExternalDetails({
+        ...externalDetails,
+        companyId: value.id,
+        companyName: value.name,
+      });
+    } else {
+      setExternalDetails({
+        ...externalDetails,
+        companyId: null,
+        companyName: '',
+      });
+    }
+  };
+
+  const handleNameChange = event => {
+    const { name, value } = event.target;
+    if (name === 'firstName') {
+      setExternalDetails(externalDetails => ({
+        ...externalDetails,
+        name: value + ' ' + externalDetails.name.split(' ')[1],
+      }));
+    } else if (name === 'lastName') {
+      setExternalDetails(externalDetails => ({
+        ...externalDetails,
+        name: externalDetails.name.split(' ')[0] + ' ' + value,
+      }));
+    }
+  };
+
+  const handleOnRiskOwnerTypeChange = (event, value) => {
+    if (value !== null) {
+      setExternalDetails({
+        ...externalDetails,
+        riskOwnerTypeId: value.id,
+        riskOwnerTypeName: value.ownerType,
+      });
+    } else {
+      setExternalDetails({
+        ...externalDetails,
+        riskOwnerTypeId: null,
+        riskOwnerTypeName: '',
+      });
     }
   };
   const handleOnRoleChange = (event, value) => {
@@ -414,24 +578,28 @@ const UserForm = props => {
 
   const countries = [
     {
-      name: "Kenya",
-      code: "KE",
-      flag: "ke",
-      tel: "+254",
+      name: 'Kenya',
+      code: 'KE',
+      flag: 'ke',
+      tel: '+254',
     },
     {
-      name: "Uganda",
-      code: "UG",
-      flag: "ug",
-      tel: "+256",
+      name: 'Uganda',
+      code: 'UG',
+      flag: 'ug',
+      tel: '+256',
     },
     {
-      name: "Rwanda",
-      code: "RW",
-      flag: "rw",
-      tel: "+250",
+      name: 'Rwanda',
+      code: 'RW',
+      flag: 'rw',
+      tel: '+250',
     },
   ];
+
+  useEffect(() => {
+    dispatch(fetchRiskOwnerTypes());
+  }, []);
 
   return (
     <Box className={classes.root}>
@@ -443,56 +611,64 @@ const UserForm = props => {
         ))}
       </Stepper>
       <Box pt={5} pb={10} pr={10} pl={10}>
-        {activeStep === steps.length ? (
-          <SuccessPage {...{ classes, handleReset, userDetails, isUpdate }} />
-        ) : (
-          <Box display={'flex'} flexDirection={'column'}>
-            {activeStep === 0 && (
-              <>
-                <GridContainer>
-                  {!isUpdate && (
-                    <Grid item md={12} xs={12}>
-                      <Box display={'flex'}>
-                        <Box flex={'1 0 auto'} />
-                        <Button variant={'outlined'} color={'primary'} onClick={e => setOpenDialog(true)}>
-                          Import From Active Directory
-                        </Button>
-                      </Box>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+            <Tab label="System Users" {...a11yProps(0)} />
+            <Tab label="External Users" {...a11yProps(1)} />
+            {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
+          </Tabs>
+        </Box>
+        <TabPanel value={value} index={0}>
+          {activeStep === steps.length ? (
+            <SuccessPage {...{ classes, handleReset, userDetails, isUpdate }} />
+          ) : (
+            <Box display={'flex'} flexDirection={'column'}>
+              {activeStep === 0 && (
+                <>
+                  <GridContainer>
+                    {!isUpdate && (
+                      <Grid item md={12} xs={12}>
+                        <Box display={'flex'}>
+                          <Box flex={'1 0 auto'} />
+                          <Button variant={'outlined'} color={'primary'} onClick={e => setOpenDialog(true)}>
+                            Import From Active Directory
+                          </Button>
+                        </Box>
+                      </Grid>
+                    )}
+                    <Grid item md={6} xs={12}>
+                      <AppTextInput
+                        fullWidth
+                        variant="outlined"
+                        label="First Name"
+                        helperText={userDetails.firstName === '' ? 'First Name is required.' : ''}
+                        type="text"
+                        value={userDetails.firstName}
+                        onChange={e => setUserDetails({ ...userDetails, firstName: e.target.value })}
+                      />
                     </Grid>
-                  )}
-                  <Grid item md={6} xs={12}>
-                    <AppTextInput
-                      fullWidth
-                      variant="outlined"
-                      label="First Name"
-                      helperText={userDetails.firstName === '' ? 'First Name is required.' : ''}
-                      type="text"
-                      value={userDetails.firstName}
-                      onChange={e => setUserDetails({ ...userDetails, firstName: e.target.value })}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <AppTextInput
-                      fullWidth
-                      variant="outlined"
-                      label="Last Name"
-                      helperText={userDetails.lastName === '' ? 'Last Name is required.' : ''}
-                      value={userDetails.lastName}
-                      onChange={e => setUserDetails({ ...userDetails, lastName: e.target.value })}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <AppTextInput
-                      fullWidth
-                      variant="outlined"
-                      label="Email Address"
-                      helperText={isValidEmail(userDetails.email) ? '' : 'Email is Invalid!'}
-                      value={userDetails.email}
-                      onChange={e => setUserDetails({ ...userDetails, email: e.target.value, userName: e.target.value })}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    {/* <TextField
+                    <Grid item md={6} xs={12}>
+                      <AppTextInput
+                        fullWidth
+                        variant="outlined"
+                        label="Last Name"
+                        helperText={userDetails.lastName === '' ? 'Last Name is required.' : ''}
+                        value={userDetails.lastName}
+                        onChange={e => setUserDetails({ ...userDetails, lastName: e.target.value })}
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <AppTextInput
+                        fullWidth
+                        variant="outlined"
+                        label="Email Address"
+                        helperText={isValidEmail(userDetails.email) ? '' : 'Email is Invalid!'}
+                        value={userDetails.email}
+                        onChange={e => setUserDetails({ ...userDetails, email: e.target.value, userName: e.target.value })}
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      {/* <TextField
                       variant={'outlined'}
                       autoFocus
                       error={Boolean(formikValidation.touched.phoneNumber && formikValidation.errors.phoneNumber)}
@@ -538,119 +714,304 @@ const UserForm = props => {
                         ),
                       }}
                     /> */}
-                    <AppTextInput
-                      fullWidth
-                      type="phone"
-                      defaultCountry="KE"
-                      variant="outlined"
-                      label="Phone Number"
-                      value={userDetails.phoneNumber}
-                      helperText={userDetails.phoneNumber === '' ? 'Phone number is required.' : ''}
-                      onChange={e => setUserDetails({ ...userDetails, phoneNumber: e.target.value })}
-                    />
-                  </Grid>
-                </GridContainer>
-              </>
-            )}
-            {activeStep === 1 && (
-              <>
-                <GridContainer>
-                  <Grid item md={4} xs={12}>
-                    <AppTextInput
-                      fullWidth
-                      variant="outlined"
-                      label="Staff Number [Optional]"
-                      value={userDetails.staffNumber}
-                      onChange={e => setUserDetails({ ...userDetails, staffNumber: e.target.value })}
-                    />
-                  </Grid>
-                  <Grid item md={4} xs={12}>
-                    <Autocomplete
-                      fullWidth
-                      options={subsidiaries}
-                      value={getAutoCompleteValue(subsidiaries, userDetails.companyId)}
-                      getOptionLabel={option => option.name}
-                      onChange={handleOnSubsidiaryChange}
-                      renderOption={(option, { selected }) => <span key={option.id}>{option.name}</span>}
-                      renderInput={params => (
-                        <TextField required fullWidth {...params} size={'small'} variant={'outlined'} label="Subsidiary" />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item md={4} xs={12}>
-                    <Autocomplete
-                      fullWidth
-                      options={roles}
-                      value={getAutoCompleteValue(roles, userDetails.roleId)}
-                      getOptionLabel={option => option.name}
-                      onChange={handleOnRoleChange}
-                      renderOption={(option, { selected }) => <span key={option.id}>{option.name}</span>}
-                      renderInput={params => (
-                        <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Role" />
-                      )}
-                    />
-                  </Grid>
-                </GridContainer>
-                <Box width={'100%'} mt={5} mb={2} display={'flex'}>
-                  <Button
-                    onClick={handleAddDepartment}
-                    type={'button'}
-                    size={'small'}
-                    startIcon={<AddCircle />}
-                    variant={'outlined'}
-                    color={'primary'}>
-                    Assign Department
-                  </Button>
-                </Box>
-
-                {organization.length !== 0 &&
-                  organization.map((org, index) => (
-                    <Box key={index} mt={3}>
-                      <AddDepartmentForm
-                        {...{
-                          departments,
-                          sections,
-                          subSections,
-                          organization: org,
-                          userDetails,
-                          handleOnDepartmentChange,
-                          handleOnSectionChange,
-                          handleOnSubSectionChange,
-                          index,
-                          handleRemoveDept,
-                        }}
+                      <AppTextInput
+                        fullWidth
+                        type="phone"
+                        defaultCountry="KE"
+                        variant="outlined"
+                        label="Phone Number"
+                        value={userDetails.phoneNumber}
+                        helperText={userDetails.phoneNumber === '' ? 'Phone number is required.' : ''}
+                        onChange={e => setUserDetails({ ...userDetails, phoneNumber: e.target.value })}
                       />
-                    </Box>
-                  ))}
-              </>
-            )}
-            {activeStep === 2 && (
-              <Box display={'flex'} alignItems={'center'} justifyItems="center">
-                <Preview {...{ userDetails }} />
-              </Box>
-            )}
-            <Box display={'flex'} mt={10}>
-              <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
-                <ArrowBackIos /> Back
-              </Button>
-              <Box flex={'1 0 auto'} />
-              {activeStep === steps.length - 1 ? (
-                <Button
-                  variant="contained"
-                  disabled={!isValid}
-                  color="primary"
-                  onClick={handleSubmit}
-                  className={classes.button}>
-                  Finish
-                </Button>
-              ) : (
-                <Button variant="contained" color="primary" onClick={handleNext} className={classes.button}>
-                  Next
-                </Button>
+                    </Grid>
+                  </GridContainer>
+                </>
               )}
+              {activeStep === 1 && (
+                <>
+                  <GridContainer>
+                    <Grid item md={4} xs={12}>
+                      <AppTextInput
+                        fullWidth
+                        variant="outlined"
+                        label="Staff Number [Optional]"
+                        value={userDetails.staffNumber}
+                        onChange={e => setUserDetails({ ...userDetails, staffNumber: e.target.value })}
+                      />
+                    </Grid>
+                    <Grid item md={4} xs={12}>
+                      <Autocomplete
+                        fullWidth
+                        options={subsidiaries}
+                        value={getAutoCompleteValue(subsidiaries, userDetails.companyId)}
+                        getOptionLabel={option => option.name}
+                        onChange={handleOnSubsidiaryChange}
+                        renderOption={(option, { selected }) => <span key={option.id}>{option.name}</span>}
+                        renderInput={params => (
+                          <TextField required fullWidth {...params} size={'small'} variant={'outlined'} label="Subsidiary" />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item md={4} xs={12}>
+                      <Autocomplete
+                        fullWidth
+                        options={roles}
+                        value={getAutoCompleteValue(roles, userDetails.roleId)}
+                        getOptionLabel={option => option.name}
+                        onChange={handleOnRoleChange}
+                        renderOption={(option, { selected }) => <span key={option.id}>{option.name}</span>}
+                        renderInput={params => (
+                          <TextField fullWidth {...params} size={'small'} variant={'outlined'} label="Role" />
+                        )}
+                      />
+                    </Grid>
+                  </GridContainer>
+                  <Box width={'100%'} mt={5} mb={2} display={'flex'}>
+                    <Button
+                      onClick={handleAddDepartment}
+                      type={'button'}
+                      size={'small'}
+                      startIcon={<AddCircle />}
+                      variant={'outlined'}
+                      color={'primary'}>
+                      Assign Department
+                    </Button>
+                  </Box>
+
+                  {organization.length !== 0 &&
+                    organization.map((org, index) => (
+                      <Box key={index} mt={3}>
+                        <AddDepartmentForm
+                          {...{
+                            departments,
+                            sections,
+                            subSections,
+                            organization: org,
+                            userDetails,
+                            handleOnDepartmentChange,
+                            handleOnSectionChange,
+                            handleOnSubSectionChange,
+                            index,
+                            handleRemoveDept,
+                          }}
+                        />
+                      </Box>
+                    ))}
+                </>
+              )}
+              {activeStep === 2 && (
+                <Box display={'flex'} alignItems={'center'} justifyItems="center">
+                  <Preview {...{ userDetails }} />
+                </Box>
+              )}
+              <Box display={'flex'} mt={10}>
+                <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
+                  <ArrowBackIos /> Back
+                </Button>
+                <Box flex={'1 0 auto'} />
+                {activeStep === steps.length - 1 ? (
+                  <Button
+                    variant="contained"
+                    disabled={!isValid}
+                    color="primary"
+                    onClick={handleSubmit}
+                    className={classes.button}>
+                    Finish
+                  </Button>
+                ) : (
+                  <Button variant="contained" color="primary" onClick={handleNext} className={classes.button}>
+                    Next
+                  </Button>
+                )}
+              </Box>
             </Box>
-          </Box>
-        )}
+          )}
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          {currentStep === steps.length ? (
+            <SuccessPage {...{ classes, handleReset, externalDetails, isUpdate }} />
+          ) : (
+            <Box display={'flex'} flexDirection={'column'}>
+              {currentStep === 0 && (
+                <>
+                  <GridContainer>
+                    {!isUpdate && (
+                      <Grid item md={12} xs={12}>
+                        <Box display={'flex'}>
+                          <Box flex={'1 0 auto'} />
+                          <Button variant={'outlined'} color={'primary'} onClick={e => setOpenDialog(true)}>
+                            Import From Active Directory
+                          </Button>
+                        </Box>
+                      </Grid>
+                    )}
+                    <Grid item md={6} xs={12}>
+                      <AppTextInput
+                        fullWidth
+                        variant="outlined"
+                        label="First Name"
+                        helperText={externalDetails.name === '' ? 'First Name is required.' : ''}
+                        type="text"
+                        name="firstName"
+                        value={externalDetails.name.split(' ')[0]}
+                        onChange={handleNameChange}
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <AppTextInput
+                        fullWidth
+                        variant="outlined"
+                        label="Last Name"
+                        helperText={externalDetails.name === '' ? 'Last Name is required.' : ''}
+                        value={externalDetails.name.split(' ')[1]}
+                        name="lastName"
+                        onChange={handleNameChange}
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <AppTextInput
+                        fullWidth
+                        variant="outlined"
+                        label="Email Address"
+                        helperText={isValidEmail(externalDetails.email) ? '' : 'Email is Invalid!'}
+                        value={externalDetails.email}
+                        onChange={e =>
+                          setExternalDetails({ ...externalDetails, email: e.target.value, userName: e.target.value })
+                        }
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      {/* <TextField
+                      variant={'outlined'}
+                      autoFocus
+                      error={Boolean(formikValidation.touched.phoneNumber && formikValidation.errors.phoneNumber)}
+                      fullWidth
+                      helperText={formikValidation.touched.phoneNumber && formikValidation.errors.phoneNumber}
+                      sx={{ minWidth: "450px" }}
+                      label="Phone Number"
+                      margin="normal"
+                      disabled={phoneDisabled}
+                      name="phoneNumber"
+                      onBlur={formikValidation.handleBlur}
+                      onChange={formikValidation.handleChange}
+                      type="number"
+                      value={formikValidation.values.phoneNumber}
+                      InputProps={{
+                        form: {
+                          autocomplete: 'off',
+                        },
+                        startAdornment: (
+                          <>
+                            <InputAdornment position="start">
+                              <TextField
+                                select
+                                disabled={phoneDisabled}
+                                style={{ width: '60px' }}
+                                label=""
+                                name="countryCode"
+                                variant={'standard'}
+                                value={formikValidation.values.countryCode}
+                                onChange={formikValidation.handleChange}
+                                InputProps={{
+                                  disableUnderline: true,
+                                }}>
+                                {countries.map((country, key) => (
+                                  <MenuItem key={key} value={country.tel}>
+                                    <span className={`fi fi-${country.flag} fis`}>{country.code}</span>
+                                  </MenuItem>
+                                ))}
+                              </TextField>
+                            </InputAdornment>
+                            <InputAdornment position={'start'}>{formikValidation.values.countryCode}</InputAdornment>
+                          </>
+                        ),
+                      }}
+                    /> */}
+                      <AppTextInput
+                        fullWidth
+                        type="phone"
+                        defaultCountry="KE"
+                        variant="outlined"
+                        label="Phone Number"
+                        value={externalDetails.phoneNumber}
+                        helperText={externalDetails.phoneNumber === '' ? 'Phone number is required.' : ''}
+                        onChange={e => setExternalDetails({ ...externalDetails, phoneNumber: e.target.value })}
+                      />
+                    </Grid>
+                  </GridContainer>
+                </>
+              )}
+              {currentStep === 1 && (
+                <>
+                  <GridContainer>
+                    <Grid item md={4} xs={12}>
+                      <Autocomplete
+                        fullWidth
+                        options={subsidiaries}
+                        value={getAutoCompleteValue(subsidiaries, externalDetails.companyId)}
+                        getOptionLabel={option => option.name}
+                        onChange={handleOnExternalSubsidiaryChange}
+                        renderOption={(option, { selected }) => <span key={option.id}>{option.name}</span>}
+                        renderInput={params => (
+                          <TextField required fullWidth {...params} size={'small'} variant={'outlined'} label="Subsidiary" />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item md={4} xs={12}>
+                      <Autocomplete
+                        fullWidth
+                        options={filteredTypes}
+                        value={getAutoCompleteValue(filteredTypes, externalDetails.riskOwnerTypeId)}
+                        getOptionLabel={option => option.ownerType}
+                        onChange={handleOnRiskOwnerTypeChange}
+                        renderOption={(option, { selected }) => <span key={option.id}>{option.ownerType}</span>}
+                        renderInput={params => (
+                          <TextField
+                            required
+                            fullWidth
+                            {...params}
+                            size={'small'}
+                            variant={'outlined'}
+                            label="Risk Owner Type"
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </GridContainer>
+                </>
+              )}
+              {currentStep === 2 && (
+                <Box display={'flex'} alignItems={'center'} justifyItems="center">
+                  <ExternalPreview {...{ externalDetails }} />
+                </Box>
+              )}
+              <Box display={'flex'} mt={10}>
+                <Button disabled={currentStep === 0} onClick={handleExternalBack} className={classes.button}>
+                  <ArrowBackIos /> Back
+                </Button>
+                <Box flex={'1 0 auto'} />
+                {currentStep === steps.length - 1 ? (
+                  <Button
+                    variant="contained"
+                    // disabled={!isValid}
+                    color="primary"
+                    onClick={handleSubmitExternal}
+                    className={classes.button}>
+                    External Finish
+                  </Button>
+                ) : (
+                  <Button variant="contained" color="primary" onClick={handleExternalNext} className={classes.button}>
+                    Next
+                  </Button>
+                )}
+              </Box>
+            </Box>
+          )}
+        </TabPanel>
+        {/* <TabPanel value={value} index={2}>
+          Item Three
+        </TabPanel> */}
       </Box>
     </Box>
   );

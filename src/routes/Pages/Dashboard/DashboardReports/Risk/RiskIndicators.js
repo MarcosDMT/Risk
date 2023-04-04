@@ -36,8 +36,6 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import HeightIcon from '@mui/icons-material/Height';
 
-
-
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
   // if (validatePermission(PERMISSIONS.RISK_UNIVERSE.UPDATE, permissions)) {
@@ -118,33 +116,31 @@ const RiskIndicators = props => {
     saveAs(blob, 'data.xlsx');
   };
 
-  const checkIfCurrentGreat = ({displayValue,data}) =>{
-    if(data?.currentStatus > data?.riskAppetiteAmount){
-      return <Chip variant="outlined" color="error" label={displayValue} />
-    }else{
-      return <Chip variant="outlined" color="success" label={displayValue} />
+  const checkIfCurrentGreat = ({ displayValue, data }) => {
+    if (data?.currentStatus > data?.riskAppetiteAmount) {
+      return <Chip variant="outlined" color="error" label={displayValue} />;
+    } else {
+      return <Chip variant="outlined" color="success" label={displayValue} />;
     }
-  }
+  };
 
-  const checkIfPreviousGreat = ({displayValue,data}) =>{
-    if(data?.currentStatus > data?.riskAppetiteAmount){
-      return <Chip variant="outlined" color="error" label={displayValue} />
-    }else{
-      return <Chip variant="outlined" color="success" label={displayValue} />
+  const checkIfPreviousGreat = ({ displayValue, data }) => {
+    if (data?.currentStatus > data?.riskAppetiteAmount) {
+      return <Chip variant="outlined" color="error" label={displayValue} />;
+    } else {
+      return <Chip variant="outlined" color="success" label={displayValue} />;
     }
-  }
+  };
 
-  const checkDirection = ({data}) =>{
-    if(data?.riskAppetiteDirection === 'Negative'){
+  const checkDirection = ({ data }) => {
+    if (data?.riskAppetiteDirection === 'Negative') {
       return <ArrowDownwardIcon style={{ color: 'red' }} />;
-    }else if(data?.riskAppetiteDirection === 'Positive'){
+    } else if (data?.riskAppetiteDirection === 'Positive') {
       return <ArrowUpwardIcon style={{ color: 'green' }} />;
-    }else if(data?.riskAppetiteDirection === 'Stable'){
-       return <HeightIcon style={{ color: 'orange',transform:'rotate(90deg)' }} />
+    } else if (data?.riskAppetiteDirection === 'Stable') {
+      return <HeightIcon style={{ color: 'orange', transform: 'rotate(90deg)' }} />;
     }
-  }
-
-  console.log("INDICATOR ",indicators);
+  };
 
   return (
     <>

@@ -98,8 +98,15 @@ const UsersList = props => {
     );
   }
 
+  const viewDepartment = ({ displayValue }) => {
+    if (!Array.isArray(displayValue)) {
+      return null;
+    }
+    return displayValue?.map((value, index) => <li key={index}>{value.departmentName}</li>);
+  };
+
   // filter active users
-let activeUsers = users.filter((user) => user.isActive === true);
+  let activeUsers = users.filter(user => user.isActive === true);
 
   return (
     <>
@@ -146,12 +153,13 @@ let activeUsers = users.filter((user) => user.isActive === true);
           allowFiltering={false}
         />
         <Column
-          dataField="departmentName"
+          dataField="organization"
           minWidth={100}
           caption="Department"
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
+          cellRender={viewDepartment}
         />
         <Column
           dataField="isActive"

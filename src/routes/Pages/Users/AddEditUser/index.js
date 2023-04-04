@@ -53,6 +53,14 @@ const AddEditUser = () => {
     roleId: null,
     roleName: '',
   };
+
+  const initialExternal = {
+    name: '',
+    email: '',
+    phoneNumber: '',
+    companyId: '',
+    riskOwnerTypeId: null,
+  };
   const [isUpdate, setIsUpdate] = useState(false);
   const dispatch = useDispatch();
   const { subsidiaries, currentSubsidiary } = useSelector(({ subsidiaries }) => subsidiaries);
@@ -61,6 +69,7 @@ const AddEditUser = () => {
   const { filteredSubSections } = useSelector(({ subSections }) => subSections);
   const { rolesList } = useSelector(({ roles }) => roles);
   const [userDetails, setUserDetails] = useState(initialState);
+  const [externalDetails, setExternalDetails] = useState(initialExternal);
   const location = useLocation();
 
   function checkErrors() {
@@ -109,6 +118,8 @@ const AddEditUser = () => {
               {...{
                 initialState,
                 userDetails,
+                externalDetails,
+                setExternalDetails,
                 isUpdate,
                 isValid,
                 setIsValid,
