@@ -52,6 +52,7 @@ function AlertDialog({ data, displayValue }) {
   const [open, setOpen] = React.useState(false);
   const { statutoryCompliances } = useSelector(({ compliance }) => compliance);
   const [checked, setChecked] = React.useState(false);
+
   let initialdetails = {
     id: data.id,
     action: 0,

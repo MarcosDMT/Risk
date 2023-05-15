@@ -95,8 +95,6 @@ const StatutoryCompliance = () => {
   const classes = useStyles();
   const history = useHistory();
 
-  console.log("SUB STATUTORY ",subStatutoryComplianceData)
-
   const onCloseDrawer = () => {
     setOpenDrawer(false);
   };
@@ -113,7 +111,7 @@ const StatutoryCompliance = () => {
   };
   const onDeleteCompliance = async data => {
     await dispatch(deleteStatutoryCompliance(data));
-    await dispatch(fetchStatutoryComplianceSub({id: selectedStatutory}));
+    await dispatch(fetchStatutoryComplianceSub({ id: selectedStatutory }));
   };
 
   const handleOnStepChange = (e, value) => {
@@ -127,8 +125,6 @@ const StatutoryCompliance = () => {
     // if (tabStep === 4){
     //   enterpriseData = filterEnterpriseWithId(compliedStatutoryCompliance, selectedStatutory)
     // }
-
-    console.log('STATUTORY ', enterpriseData);
 
     return (
       <>

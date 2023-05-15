@@ -3,15 +3,13 @@ import { fetchError, fetchStart, fetchSuccess } from './Common';
 import { API_URL, REQUEST_STATUS } from '../../@jumbo/utils/apis';
 import useAxios from '../../services/Requests/useAxios';
 
-
-
-const formatToastMessage = (err) =>{
+const formatToastMessage = err => {
   let error = JSON.parse(err.response.data);
   let convertedObject = Object.entries(error.errors);
-  let result = convertedObject?.map(item => item[1][0])
+  let result = convertedObject?.map(item => item[1][0]);
 
   return result;
-}
+};
 
 //------------------ Legal Compliance -----------------------//
 export const fetchLegalCompliance = () => {
@@ -29,7 +27,7 @@ export const fetchLegalCompliance = () => {
       })
       .catch(err => {
         if (err.response.status === 400) {
-          dispatch(fetchError(formatToastMessage(err)))
+          dispatch(fetchError(formatToastMessage(err)));
         }
       });
   };
@@ -56,7 +54,7 @@ export const addLegalCompliance = (data, callBackFunc) => {
           if (err.response.status === REQUEST_STATUS.BAD_REQUEST) {
             dispatch(fetchError(formatToastMessage(err)));
           }
-        } 
+        }
       });
   };
 };
@@ -145,7 +143,7 @@ export const fetchEnterpriseComplianceMain = () => {
 };
 
 export const fetchEnterpriseComplianceSub = data => {
-  console.log("ENTERPRISE DATA ", data)
+  console.log('ENTERPRISE DATA ', data);
   return async dispatch => {
     let axiosInstance = useAxios(dispatch);
     dispatch(fetchStart());
@@ -279,7 +277,7 @@ export const updateEnterpriseCompliance = (updatedData, callBackFunc) => {
       hasSubCompliance: updatedData.hasSubCompliance,
       subId: updatedData.subId,
       hasAttachment: updatedData.hasAttachment,
-    }
+    };
     await axiosInstance
       .post(`${API_URL.UPDATE_ENTERPRISE}`, formData)
       .then(res => {
@@ -320,7 +318,6 @@ export const deleteEnterpriseCompliance = data => {
       });
   };
 };
-
 
 // get enterprise history
 export const getEnterpriseComplianceHistory = data => {
@@ -534,17 +531,16 @@ export const fetchHistory = () => {
 };
 
 export const fetchStatutoryComplianceSub = data => {
-  console.log("STATUTORY DATA ", data)
   return async dispatch => {
     let axiosInstance = useAxios(dispatch);
     dispatch(fetchStart());
     await axiosInstance
       .post(`${API_URL.FETCH_STATUTORY_SUB}`, data)
       .then(res => {
-          dispatch({
-            type: COMPLIANCE.STATUTORY.GET_SUB,
-            payload: res.data,
-          });
+        dispatch({
+          type: COMPLIANCE.STATUTORY.GET_SUB,
+          payload: res.data,
+        });
         dispatch(fetchSuccess());
       })
       .catch(err => {
@@ -559,7 +555,6 @@ export const fetchStatutoryComplianceSub = data => {
       });
   };
 };
-
 
 export const addStatutoryCompliance = (data, callBackFunc) => {
   return async dispatch => {
@@ -612,7 +607,7 @@ export const updateStatutoryCompliance = (updatedData, callBackFunc) => {
       hasSubCompliance: updatedData.hasSubCompliance,
       subId: updatedData.subId,
       hasAttachment: updatedData.hasAttachment,
-    }
+    };
     await axiosInstance
       .post(`${API_URL.UPDATE_STATUTORY}`, formData)
       .then(res => {

@@ -475,10 +475,10 @@ export const RiskContent = props => {
   const directions = ['Positive', 'Negative'];
 
   const velocity = [
-    { id: 1, name: 'Less than 1 yr' },
-    { id: 2, name: '1 - 3 yrs' },
-    { id: 3, name: '3 - 5 yrs' },
-    { id: 4, name: 'Above 5 yrs' },
+    { id: 4, name: 'Less than 1 yr' },
+    { id: 3, name: '1 - 3 yrs' },
+    { id: 2, name: '3 - 5 yrs' },
+    { id: 1, name: 'Above 5 yrs' },
   ];
 
   const existingControls = [
@@ -709,7 +709,7 @@ export const RiskContent = props => {
     };
 
     const formattedResponse = formatResponse(data);
-    console.log("NEW RESPONSE ",formattedResponse)
+    console.log('NEW RESPONSE ', formattedResponse);
 
     if (formattedResponse?.name && formattedResponse?.realValue) {
       await setRiskDetails({ ...riskDetails, residualRisk: formattedResponse });
@@ -739,11 +739,7 @@ export const RiskContent = props => {
   ]);
 
   useEffect(() => {
-    if (
-      riskDetails.riskProbabilityId !== null &&
-      riskDetails.riskSeverityId !== null &&
-      riskDetails.riskVelocity !== null
-    ) {
+    if (riskDetails.riskProbabilityId !== null && riskDetails.riskSeverityId !== null && riskDetails.riskVelocity !== null) {
       calculateInherentRisk();
     }
   }, [riskDetails.riskProbabilityId, riskDetails.riskSeverityId, riskDetails.riskVelocity]);
@@ -915,10 +911,8 @@ export const RiskContent = props => {
     });
   }, []);
 
-
   // get value of selected frequency to display in preview
   const selectedFrequency = getAutoCompleteValue(riskFrequencies, riskDetails.keyIndicatorFrequencyId);
-  console.log("SELECTED ",selectedFrequency)
 
   return (
     <>
@@ -1120,7 +1114,7 @@ export const RiskContent = props => {
                     />
                   </Grid>
                   <Grid item md={12} xs={12}>
-                  <Autocomplete
+                    <Autocomplete
                       fullWidth
                       options={riskFrequencies}
                       onChange={handleFrequency}
@@ -1568,9 +1562,8 @@ export const RiskContent = props => {
 export const Preview = props => {
   const [expanded, setExpanded] = React.useState(false);
   const [activeStep, setActiveStep] = React.useState(0);
-  const { riskDetails, isView, index,selectedFrequency } = props;
+  const { riskDetails, isView, index, selectedFrequency } = props;
   const { riskFrequencies } = useSelector(({ utils }) => utils);
-
 
   const useStyles = makeStyles(theme => ({
     isActive: {

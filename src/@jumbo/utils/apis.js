@@ -1,5 +1,5 @@
 import SimpleCrypto from 'simple-crypto-js';
- const HOST = 'http://localhost:5002';
+const HOST = 'http://localhost:5002';
 // const HOST = '';
 
 export const API_BASE_URL = HOST !== '' ? HOST : window.location.origin;
@@ -32,7 +32,6 @@ export const API_URL = {
   CREATE_SUBSIDIARY: '/api/organization/subsidiaries/create',
   UPDATE_SUBSIDIARY: '/api/organization/subsidiaries/update',
   DELETE_SUBSIDIARY: '/api/organization/subsidiaries/delete',
-
 
   //------------------Departments------------//
   FETCH_DEPARTMENTS: '/api/organization/departments/',
@@ -111,7 +110,6 @@ export const API_URL = {
   UPDATE_INCIDENT: 'api/risk/risk-incident/update',
   FETCH_INCIDENT: 'api/risk/risk-incident/',
   DELETE_INCIDENT: 'api/risk/risk-incident/delete',
-
 
   //------------------- Risk Indicator -----------------//
   FETCH_INDICATOR: 'api/risk/risk-indicator/',

@@ -15,11 +15,11 @@ import {
   Toolbar,
 } from 'devextreme-react/data-grid';
 import { Link } from 'react-router-dom';
-import { Box, Button, Chip, Typography } from '@material-ui/core';
-import { Check, FileUpload, LockResetRounded } from '@mui/icons-material';
+import { Button, Chip, Typography } from '@material-ui/core';
+import { FileUpload } from '@mui/icons-material';
 import { DataGrid } from 'devextreme-react';
 import useStyles from '../../index.style';
-import { AddCircle, Cancel, Delete, Edit, MoreHoriz, Visibility } from '@material-ui/icons';
+import { AddCircle, Delete, Edit, MoreHoriz, Visibility } from '@material-ui/icons';
 import CmtDropdownMenu from '../../../../@coremat/CmtDropdownMenu';
 import { validatePermission } from '../../../../@jumbo/utils/commonHelper';
 import { PERMISSIONS } from '../../../../@jumbo/constants/RolesConstants';
@@ -29,7 +29,9 @@ import { MdCalculate } from 'react-icons/md';
 import { assessRiskUniverse } from '../../../../redux/actions/RiskUniverse';
 import { useDispatch } from 'react-redux';
 import { downloadTemplate } from '../../../../redux/actions/RiskUniverse';
-
+import DownloadIcon from '@mui/icons-material/Download';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 const getActions = permissions => {
   let actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
@@ -172,6 +174,16 @@ const RisksTable = props => {
   //   }
   //   return <Typography style={{ color: data?.residualRiskColor ?? '' }}>{displayValue}</Typography>;
   // }
+
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(risks);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
@@ -329,9 +341,17 @@ const RisksTable = props => {
           allowFiltering={false}
         />
         <Column
-          dataField="keyIndicatorFrequencyName"
+          dataField="riskIndicator"
           minWidth={150}
           caption="Risk Indicator"
+          allowHeaderFiltering={true}
+          allowSearch={true}
+          allowFiltering={false}
+        />
+        <Column
+          dataField="keyIndicatorFrequencyName"
+          minWidth={150}
+          caption="Risk Indicator Frequency"
           allowHeaderFiltering={true}
           allowSearch={true}
           allowFiltering={false}
@@ -443,6 +463,17 @@ const RisksTable = props => {
                 <FileUpload /> Import Risks
               </Button>
             </RoleBasedGuard>
+          </Item>
+          <Item location="after">
+            <Button
+              variant="outlined"
+              size={'small'}
+              color="primary"
+              onClick={exportToExcel}
+              // style={{ marginBottom: '10px' }}
+            >
+              <DownloadIcon /> Export to Excel
+            </Button>
           </Item>
           <Item location="after" name="columnChooserButton" />
           <Item location="after" name="searchPanel" />

@@ -10,9 +10,9 @@ const Dashboards = ({ match }) => {
         <Redirect exact from={`${requestedUrl}/`} to={`${requestedUrl}/dashboard-report`} />
         <Route path={`${requestedUrl}/dashboard-report`} component={lazy(() => import('./DashboardReports/Risk'))} />
         <Route path={`${requestedUrl}/risk-universe`} component={lazy(() => import('./GeneralDashboard'))} />
-        {/*<Route path={`${requestedUrl}/risk-assessment`} component={lazy(() => import('./AssessmentDashboard'))} />*/}
-        {/*<Route path={`${requestedUrl}/risk-incidents`} component={lazy(() => import('./IncidentsDashboard'))} />*/}
-        {/*<Route path={`${requestedUrl}/compliance`} component={lazy(() => import('./ComplianceDashboard'))} /> *!/*/}
+        <Route path={`${requestedUrl}/risk-assessment`} component={lazy(() => import('./AssessmentDashboard'))} />
+        <Route path={`${requestedUrl}/risk-incidents`} component={lazy(() => import('./IncidentsDashboard'))} />
+        <Route path={`${requestedUrl}/compliance`} component={lazy(() => import('./ComplianceDashboard'))} />
       </Switch>
     </Suspense>
   );

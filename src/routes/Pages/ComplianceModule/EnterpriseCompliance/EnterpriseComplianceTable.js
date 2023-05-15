@@ -15,7 +15,7 @@ import {
   Toolbar,
 } from 'devextreme-react/data-grid';
 import { Link } from 'react-router-dom';
-import { Button,Box } from '@material-ui/core';
+import { Button, Box } from '@material-ui/core';
 import { Chip } from '@mui/material';
 import { FileUpload } from '@mui/icons-material';
 import { DataGrid } from 'devextreme-react';
@@ -33,6 +33,9 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import HistoryIcon from '@mui/icons-material/History';
 import { approveCompliance } from '../../../../redux/actions/Compliance';
+import DownloadIcon from '@mui/icons-material/Download';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 const getActions = (data, viewOnly) => {
   const actions = [{ action: 'view', label: 'View', icon: <Visibility /> }];
@@ -148,10 +151,10 @@ const EnterpriseComplianceTable = props => {
     return <Typography>{displayValue}</Typography>;
   };
 
-  const submitApproval = async(data) =>{
-    await dispatch(approveCompliance(data))
-    await dispatch(fetchEnterpriseComplianceSub(data))
-  }
+  const submitApproval = async data => {
+    await dispatch(approveCompliance(data));
+    await dispatch(fetchEnterpriseComplianceSub(data));
+  };
 
   function approve({ displayValue, data }) {
     if (data?.isApproved === null) {
@@ -165,10 +168,20 @@ const EnterpriseComplianceTable = props => {
           size={'small'}
         />
       );
-    }else if(data?.isApproved === true){
-      return <Typography>{displayValue}</Typography>
+    } else if (data?.isApproved === true) {
+      return <Typography>{displayValue}</Typography>;
     }
   }
+
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(complianceList);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
@@ -352,6 +365,14 @@ const EnterpriseComplianceTable = props => {
           showPageSizeSelector={true}
           showNavigationButtons={true}
         />
+
+        <Toolbar>
+          <Item location="after">
+            <Button variant="outlined" size={'small'} color="primary" onClick={exportToExcel}>
+              <DownloadIcon /> Export to Excel
+            </Button>
+          </Item>
+        </Toolbar>
       </DataGrid>
       <ActionEnterpriseDialog
         {...{

@@ -338,7 +338,6 @@ export const ComplianceContent = props => {
 
   const hasSubComplianceCheck = e => {
     setComplianceDetails({ ...complianceDetails, hasSubCompliance: e.target.checked });
-    console.log(e.target.checked);
   };
 
   const handleAttachment = e => {

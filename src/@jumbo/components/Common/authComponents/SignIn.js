@@ -14,7 +14,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { CurrentAuthMethod } from '../../../constants/AppConstants';
 import { NavLink } from 'react-router-dom';
 import AuthWrapper from './AuthWrapper';
-import {isValidEmail} from "../../../utils/commonHelper";
+import { isValidEmail } from '../../../utils/commonHelper';
 
 const useStyles = makeStyles(theme => ({
   authThumb: {

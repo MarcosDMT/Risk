@@ -8,9 +8,11 @@ import {
   HeaderFilter,
   Pager,
   Paging,
+  Item,
+  Toolbar,
   SearchPanel,
 } from 'devextreme-react/data-grid';
-import { Box,Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { Chip } from '@mui/material';
 import { DataGrid } from 'devextreme-react';
 import { Delete, Edit, MoreHoriz, Visibility } from '@material-ui/icons';
@@ -24,9 +26,11 @@ import {
   fetchStatutoryComplianceMain,
   fetchStatutoryComplianceSub,
   approveCompliance,
-  approveStatutoryCompliance
+  approveStatutoryCompliance,
 } from '../../../../redux/actions/Compliance';
-
+import DownloadIcon from '@mui/icons-material/Download';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 const getActions = data => {
   const actions = [
@@ -73,14 +77,6 @@ const StatutoryComplianceTable = props => {
         style={{ cursor: 'pointer', borderColor: status?.color, color: status?.color }}
       />
     );
-    // }
-    // return (
-    //   <>
-    //     <Typography variant={'caption'} sx={{ color: status.color }}>
-    //       {status.label}
-    //     </Typography>
-    //   </>
-    // );
   }
   const onMenuClick = async (menu, data) => {
     if (menu.action === 'view') {
@@ -117,28 +113,26 @@ const StatutoryComplianceTable = props => {
     );
   }
 
-  const submitApproval = async(data) =>{
-    await dispatch(approveStatutoryCompliance(data))
-    await dispatch(fetchStatutoryComplianceSub(data))
-  }
-
+  const submitApproval = async data => {
+    await dispatch(approveStatutoryCompliance(data));
+    await dispatch(fetchStatutoryComplianceSub(data));
+  };
 
   function approve({ displayValue, data }) {
-    if(data?.isApproved === null){
+    if (data?.isApproved === null) {
       return (
         <Chip
           title={'Click Here'}
           label={<Typography>Approve</Typography>}
-          onClick={()=> dispatch(submitApproval({id: data?.id}))}
+          onClick={() => dispatch(submitApproval({ id: data?.id }))}
           variant={'outlined'}
           color={'success'}
           size={'small'}
         />
       );
-    }else if(data?.isApproved === true){
-      return <Typography>{displayValue}</Typography>
+    } else if (data?.isApproved === true) {
+      return <Typography>{displayValue}</Typography>;
     }
-    
   }
 
   const convertDate = ({ displayValue, data }) => {
@@ -147,6 +141,15 @@ const StatutoryComplianceTable = props => {
     return <Typography>{displayValue}</Typography>;
   };
 
+  // Export data to excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(complianceList);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'data.xlsx');
+  };
 
   return (
     <>
@@ -225,7 +228,7 @@ const StatutoryComplianceTable = props => {
           allowHiding={true}
           allowFiltering={false}
           cellRender={approve}
-          />
+        />
         <Column
           dataField="authority"
           minWidth={100}
@@ -258,14 +261,6 @@ const StatutoryComplianceTable = props => {
           allowSearch={true}
           allowFiltering={false}
         />
-        {/*<Column*/}
-        {/*  dataField="subSectionsName"*/}
-        {/*  minWidth={100}*/}
-        {/*  caption="Sub-Section"*/}
-        {/*  allowHeaderFiltering={true}*/}
-        {/*  allowSearch={true}*/}
-        {/*  allowFiltering={false}*/}
-        {/*/>*/}
         <Column
           dataField="penalty"
           minWidth={100}
@@ -318,6 +313,18 @@ const StatutoryComplianceTable = props => {
           allowSearch={true}
           allowFiltering={false}
         />
+        {/* <Toolbar>
+          <Item location="after">
+            <Button
+              variant="outlined"
+              size={'small'}
+              color="primary"
+              onClick={exportToExcel}
+            >
+              <DownloadIcon /> Export to Excel
+            </Button>
+          </Item>
+        </Toolbar> */}
         <Paging defaultPageSize={20} />
         <Pager
           visible={true}
@@ -325,6 +332,14 @@ const StatutoryComplianceTable = props => {
           showPageSizeSelector={true}
           showNavigationButtons={true}
         />
+
+        <Toolbar>
+          <Item location="after">
+            <Button variant="outlined" size={'small'} color="primary" onClick={exportToExcel}>
+              <DownloadIcon /> Export to Excel
+            </Button>
+          </Item>
+        </Toolbar>
       </DataGrid>
       <ActionStatutoryDialog
         {...{
